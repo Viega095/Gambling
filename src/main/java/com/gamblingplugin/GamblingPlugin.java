@@ -207,4 +207,17 @@ public class GamblingPlugin extends JavaPlugin {
         if (casinoHeistEvent == null) casinoHeistEvent = new com.gamblingplugin.events.CasinoHeistEvent(this);
         return casinoHeistEvent;
     }
+
+    private com.gamblingplugin.manager.CasinoPassManager casinoPassManager;
+    private com.gamblingplugin.manager.DailySpinManager dailySpinManager;
+
+    public com.gamblingplugin.manager.CasinoPassManager getCasinoPassManager() {
+        if (casinoPassManager == null) casinoPassManager = new com.gamblingplugin.manager.CasinoPassManager(this);
+        return casinoPassManager;
+    }
+
+    public com.gamblingplugin.manager.DailySpinManager getDailySpinManager() {
+        if (dailySpinManager == null) dailySpinManager = new com.gamblingplugin.manager.DailySpinManager(this);
+        return dailySpinManager;
+    }
 }

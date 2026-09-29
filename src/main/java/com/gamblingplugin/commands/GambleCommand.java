@@ -61,9 +61,22 @@ public class GambleCommand implements CommandExecutor {
                 player.sendMessage("§7Vender: §e/gamble token sell <cantidad>");
                 return true;
             }
+            if (args[0].equalsIgnoreCase("pass")) {
+                plugin.getCasinoPassManager().showPassStatus(player);
+                return true;
+            }
+            if (args[0].equalsIgnoreCase("daily") || args[0].equalsIgnoreCase("wheel")) {
+                plugin.getDailySpinManager().spinWheel(player);
+                return true;
+            }
             if (args[0].equalsIgnoreCase("plinko3d")) {
                 com.gamblingplugin.games.PlinkoPhysicalMachine machine = new com.gamblingplugin.games.PlinkoPhysicalMachine(plugin, player.getLocation());
                 machine.dropBall(player, 100.0, 1);
+                return true;
+            }
+            if (args[0].equalsIgnoreCase("slots3d")) {
+                com.gamblingplugin.games.PhysicalSlotsCabinet cabinet = new com.gamblingplugin.games.PhysicalSlotsCabinet(plugin, player.getLocation());
+                cabinet.spin(player, 100.0);
                 return true;
             }
             if (args[0].equalsIgnoreCase("top")) {
