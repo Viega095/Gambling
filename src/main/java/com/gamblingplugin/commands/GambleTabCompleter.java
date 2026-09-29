@@ -28,14 +28,14 @@ public class GambleTabCompleter implements TabCompleter {
         if (args.length == 1) {
             // Main subcommands
             List<String> subcommands = new ArrayList<>(Arrays.asList(
-                    "guide", "help", "slots3d", "blackjack3d", "plinko3d", "pass", "daily", "heist",
+                    "guide", "help", "race", "crash3d", "cashout", "slots3d", "blackjack3d", "plinko3d", "pass", "daily", "heist",
                     "token", "chips", "vip", "jackpot", "top", "blackjack", "roulette", "dice",
                     "slots", "coinflip", "mines", "plinko", "case"
             ));
 
             // Admin commands
             if (player.hasPermission("gambling.admin")) {
-                subcommands.addAll(Arrays.asList("admin", "spawn", "remove", "list", "tp"));
+                subcommands.addAll(Arrays.asList("admin", "hologram", "spawn", "remove", "list", "tp"));
             }
 
             return filterStartingWith(subcommands, args[0]);
@@ -45,6 +45,23 @@ public class GambleTabCompleter implements TabCompleter {
             String subcommand = args[0].toLowerCase();
 
             switch (subcommand) {
+                case "race":
+                    List<String> rSubs = new ArrayList<>(Arrays.asList("bet"));
+                    if (player.hasPermission("gambling.admin")) rSubs.add("start");
+                    return filterStartingWith(rSubs, args[1]);
+
+                case "crash3d":
+                case "crash":
+                    List<String> cSubs = new ArrayList<>(Arrays.asList("50", "100", "500", "1000"));
+                    if (player.hasPermission("gambling.admin")) cSubs.add("start");
+                    return filterStartingWith(cSubs, args[1]);
+
+                case "hologram":
+                    if (player.hasPermission("gambling.admin")) {
+                        return filterStartingWith(Arrays.asList("spawn", "remove"), args[1]);
+                    }
+                    break;
+
                 case "spawn":
                 case "remove":
                     if (player.hasPermission("gambling.admin")) {

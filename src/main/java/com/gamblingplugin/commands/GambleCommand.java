@@ -84,6 +84,30 @@ public class GambleCommand implements CommandExecutor {
                 cabinet.spin(player, 100.0);
                 return true;
             }
+            if (args[0].equalsIgnoreCase("cashout")) {
+                plugin.getPhysicalCrashRocket().cashOut(player);
+                return true;
+            }
+            if (args[0].equalsIgnoreCase("hologram")) {
+                if (!player.hasPermission("gambling.admin")) {
+                    player.sendMessage(plugin.getConfigManager().getMessage("no-permission"));
+                    return true;
+                }
+                plugin.getCasinoHologramEngine().spawnHologram(player.getLocation());
+                player.sendMessage("§a✦ Holograma de Casino creado.");
+                return true;
+            }
+            if (args[0].equalsIgnoreCase("race")) {
+                player.sendMessage("§6=== 🏇 HIPÓDROMO DE CARRERAS DE CABALLOS ===");
+                for (com.gamblingplugin.games.CasinoRaceTrack.HorseCompetitor hc : plugin.getCasinoRaceTrack().getCompetitors()) {
+                    player.sendMessage("  " + hc.color + "#" + hc.id + " " + hc.name + " §7- Cuota: §e" + hc.odds + "x");
+                }
+                player.sendMessage("§7Apostar: §e/gamble race bet <1-4> <monto>");
+                if (player.hasPermission("gambling.admin")) {
+                    player.sendMessage("§cIniciar: §e/gamble race start");
+                }
+                return true;
+            }
             if (args[0].equalsIgnoreCase("top")) {
                 sendLeaderboard(player);
                 return true;
@@ -225,25 +249,60 @@ public class GambleCommand implements CommandExecutor {
             }
         }
 
-        if (args[0].equalsIgnoreCase("token") || args[0].equalsIgnoreCase("chips")) {
-            if (args.length >= 3) {
-                double amount;
-                try {
-                    amount = Double.parseDouble(args[2]);
-                    if (amount <= 0) throw new NumberFormatException();
-                } catch (NumberFormatException e) {
-                    player.sendMessage("§cCantidad inválida.");
+        if (args[0].equalsIgnoreCase("race")) {
+            if (args.length >= 2 && args[1].equalsIgnoreCase("start")) {
+                if (!player.hasPermission("gambling.admin")) {
+                    player.sendMessage(plugin.getConfigManager().getMessage("no-permission"));
                     return true;
                 }
-
-                if (args[1].equalsIgnoreCase("buy")) {
-                    plugin.getCasinoTokenExchange().buyTokens(player, amount);
-                    return true;
-                } else if (args[1].equalsIgnoreCase("sell")) {
-                    plugin.getCasinoTokenExchange().sellTokens(player, amount);
-                    return true;
-                }
+                plugin.getCasinoRaceTrack().startRace(player.getLocation());
+                return true;
             }
+            if (args.length >= 4 && args[1].equalsIgnoreCase("bet")) {
+                try {
+                    int horse = Integer.parseInt(args[2]);
+                    double bet = Double.parseDouble(args[3]);
+                    plugin.getCasinoRaceTrack().placeBet(player, horse, bet);
+                } catch (Exception e) {
+                    player.sendMessage("§cUso: /gamble race bet <1-4> <monto>");
+                }
+                return true;
+            }
+        }
+
+        if (args[0].equalsIgnoreCase("crash3d") || args[0].equalsIgnoreCase("crash")) {
+            if (args.length >= 2 && args[1].equalsIgnoreCase("start")) {
+                if (!player.hasPermission("gambling.admin")) {
+                    player.sendMessage(plugin.getConfigManager().getMessage("no-permission"));
+                    return true;
+                }
+                plugin.getPhysicalCrashRocket().launchRocket(player.getLocation());
+                return true;
+            }
+            if (args.length >= 2) {
+                try {
+                    double bet = Double.parseDouble(args[1]);
+                    plugin.getPhysicalCrashRocket().joinRound(player, bet);
+                } catch (Exception e) {
+                    player.sendMessage("§cUso: /gamble crash3d <monto> | /gamble crash3d start");
+                }
+                return true;
+            }
+        }
+
+        if (args[0].equalsIgnoreCase("hologram") && args.length >= 2) {
+            if (!player.hasPermission("gambling.admin")) {
+                player.sendMessage(plugin.getConfigManager().getMessage("no-permission"));
+                return true;
+            }
+            if (args[1].equalsIgnoreCase("remove")) {
+                plugin.getCasinoHologramEngine().removeHologram();
+                player.sendMessage("§c✦ Holograma eliminado.");
+            } else {
+                plugin.getCasinoHologramEngine().spawnHologram(player.getLocation());
+                player.sendMessage("§a✦ Holograma de Casino creado en tu posición.");
+            }
+            return true;
         }
 
         // Blackjack command
@@ -760,6 +819,8 @@ public class GambleCommand implements CommandExecutor {
         player.sendMessage("§6╚════════════════════════════════════════════════╝");
         player.sendMessage("§7Haz clic en cualquier juego para probarlo al instante:");
 
+        sendClickable(player, "§6▶ §eHipódromo y Carreras de Caballos §7(/gamble race)", "/gamble race", "§aApostar en carreras de caballos animadas");
+        sendClickable(player, "§6▶ §eCohete Crash 3D Ascendente §7(/gamble crash3d 100)", "/gamble crash3d 100", "§aApostar en el cohete y retirar antes de la explosión");
         sendClickable(player, "§6▶ §eTragamonedas 3D en el Mundo §7(/gamble slots3d)", "/gamble slots3d", "§aProbar máquina tragamonedas física 3D animada");
         sendClickable(player, "§6▶ §eMesa de Blackjack Holográfica §7(/gamble blackjack3d)", "/gamble blackjack3d", "§aJugar Blackjack en mesa física");
         sendClickable(player, "§6▶ §eMáquina Plinko Física §7(/gamble plinko3d)", "/gamble plinko3d", "§aSoltar bola física de Plinko");
@@ -773,6 +834,9 @@ public class GambleCommand implements CommandExecutor {
         if (player.hasPermission("gambling.admin")) {
             player.sendMessage("");
             player.sendMessage("§d⚡ [HERRAMIENTAS DE ADMINISTRADOR]");
+            sendClickable(player, "§d• Iniciar Carrera de Caballos", "/gamble race start", "§eLanzar carrera de caballos en tu posición");
+            sendClickable(player, "§d• Iniciar Vuelo Cohete Crash 3D", "/gamble crash3d start", "§eDespegar cohete crash en tu posición");
+            sendClickable(player, "§d• Spawnear Holograma Leaderboard", "/gamble hologram spawn", "§eCrear podio y pozo flotante");
             sendClickable(player, "§d• Panel Administrativo GUI", "/gamble admin", "§eAbrir panel de control de administración");
             sendClickable(player, "§d• Spawnear Ruleta Física", "/gamble spawn roulette", "§eColocar una ruleta en tus pies");
             sendClickable(player, "§d• Spawnear Mesa de Blackjack", "/gamble spawn blackjack", "§eColocar mesa física de blackjack");

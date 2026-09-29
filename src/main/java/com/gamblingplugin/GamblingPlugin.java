@@ -220,4 +220,23 @@ public class GamblingPlugin extends JavaPlugin {
         if (dailySpinManager == null) dailySpinManager = new com.gamblingplugin.manager.DailySpinManager(this);
         return dailySpinManager;
     }
+
+    private com.gamblingplugin.games.CasinoRaceTrack casinoRaceTrack;
+    private com.gamblingplugin.games.PhysicalCrashRocket physicalCrashRocket;
+    private com.gamblingplugin.manager.CasinoHologramEngine casinoHologramEngine;
+
+    public com.gamblingplugin.games.CasinoRaceTrack getCasinoRaceTrack() {
+        if (casinoRaceTrack == null) casinoRaceTrack = new com.gamblingplugin.games.CasinoRaceTrack(this);
+        return casinoRaceTrack;
+    }
+
+    public com.gamblingplugin.games.PhysicalCrashRocket getPhysicalCrashRocket() {
+        if (physicalCrashRocket == null) physicalCrashRocket = new com.gamblingplugin.games.PhysicalCrashRocket(this);
+        return physicalCrashRocket;
+    }
+
+    public com.gamblingplugin.manager.CasinoHologramEngine getCasinoHologramEngine() {
+        if (casinoHologramEngine == null) casinoHologramEngine = new com.gamblingplugin.manager.CasinoHologramEngine(this);
+        return casinoHologramEngine;
+    }
 }

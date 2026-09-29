@@ -66,6 +66,13 @@ public class EconomyManager {
             economy.depositPlayer(player, amount);
     }
 
+    public void deposit(java.util.UUID uuid, double amount) {
+        if (economy != null) {
+            org.bukkit.OfflinePlayer offline = org.bukkit.Bukkit.getOfflinePlayer(uuid);
+            economy.depositPlayer(offline, amount);
+        }
+    }
+
     public boolean hasEnough(Player player, double amount) {
         return has(player, amount);
     }
