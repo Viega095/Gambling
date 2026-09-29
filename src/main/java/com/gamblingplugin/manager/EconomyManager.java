@@ -66,6 +66,14 @@ public class EconomyManager {
             economy.depositPlayer(player, amount);
     }
 
+    public boolean hasEnough(Player player, double amount) {
+        return has(player, amount);
+    }
+
+    public String format(double amount) {
+        return economy != null ? economy.format(amount) : ("$" + String.format("%.2f", amount));
+    }
+
     public Economy getEconomy() {
         return economy;
     }

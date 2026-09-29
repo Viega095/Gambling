@@ -18,7 +18,7 @@ public class DisplayEntityEngine {
         this.plugin = plugin;
     }
 
-    public BlockDisplay spawnBlockDisplay(Location loc, Material material, Vector3f scale) {
+    public static BlockDisplay spawnBlockDisplay(Location loc, Material material, Vector3f scale) {
         BlockDisplay display = (BlockDisplay) loc.getWorld().spawnEntity(loc, EntityType.BLOCK_DISPLAY);
         display.setBlock(material.createBlockData());
         display.setTransformation(new Transformation(
@@ -32,7 +32,7 @@ public class DisplayEntityEngine {
         return display;
     }
 
-    public ItemDisplay spawnItemDisplay(Location loc, ItemStack item, Vector3f scale) {
+    public static ItemDisplay spawnItemDisplay(Location loc, ItemStack item, Vector3f scale) {
         ItemDisplay display = (ItemDisplay) loc.getWorld().spawnEntity(loc, EntityType.ITEM_DISPLAY);
         display.setItemStack(item);
         display.setTransformation(new Transformation(
@@ -47,7 +47,18 @@ public class DisplayEntityEngine {
         return display;
     }
 
-    public TextDisplay spawnTextDisplay(Location loc, String text, boolean seeThrough) {
+    public static void interpolateTransformation(Display display, Vector3f scale, int durationTicks) {
+        display.setInterpolationDuration(durationTicks);
+        display.setInterpolationDelay(0);
+        display.setTransformation(new Transformation(
+                new Vector3f(0, 0, 0),
+                new AxisAngle4f(0, 0, 0, 1),
+                scale,
+                new AxisAngle4f(0, 0, 0, 1)
+        ));
+    }
+
+    public static TextDisplay spawnTextDisplay(Location loc, String text, boolean seeThrough) {
         TextDisplay display = (TextDisplay) loc.getWorld().spawnEntity(loc, EntityType.TEXT_DISPLAY);
         display.setText(text);
         display.setBillboard(Display.Billboard.CENTER);
@@ -57,7 +68,7 @@ public class DisplayEntityEngine {
         return display;
     }
 
-    public Interaction spawnInteraction(Location loc, float width, float height) {
+    public static Interaction spawnInteraction(Location loc, float width, float height) {
         Interaction interaction = (Interaction) loc.getWorld().spawnEntity(loc, EntityType.INTERACTION);
         interaction.setInteractionWidth(width);
         interaction.setInteractionHeight(height);

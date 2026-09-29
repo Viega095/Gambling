@@ -32,6 +32,10 @@ public class Deck {
         return cards.remove(0);
     }
 
+    public Card dealCard() {
+        return draw();
+    }
+
     public int remaining() {
         return cards.size();
     }
