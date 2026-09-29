@@ -42,6 +42,11 @@ public class GambleCommand implements CommandExecutor {
         }
 
         // Handle single-argument commands first
+        if (args.length == 0 || (args.length == 1 && (args[0].equalsIgnoreCase("guide") || args[0].equalsIgnoreCase("menu")))) {
+            sendInteractiveGuide(player);
+            return true;
+        }
+
         if (args.length == 1) {
             if (args[0].equalsIgnoreCase("vip")) {
                 plugin.getVIPGUI().open(player);
@@ -749,6 +754,37 @@ public class GambleCommand implements CommandExecutor {
         });
     }
 
-    // TP command (add before closing brace at top level)
-    // Note: This should be added in onCommand method instead
+    private void sendInteractiveGuide(Player player) {
+        player.sendMessage("§6╔════════════════════════════════════════════════╗");
+        player.sendMessage("§6║       §e🎰 GUÍA MAESTRA DE CASINO Y APUESTAS§6      ║");
+        player.sendMessage("§6╚════════════════════════════════════════════════╝");
+        player.sendMessage("§7Haz clic en cualquier juego para probarlo al instante:");
+
+        sendClickable(player, "§6▶ §eTragamonedas 3D en el Mundo §7(/gamble slots3d)", "/gamble slots3d", "§aProbar máquina tragamonedas física 3D animada");
+        sendClickable(player, "§6▶ §eMesa de Blackjack Holográfica §7(/gamble blackjack3d)", "/gamble blackjack3d", "§aJugar Blackjack en mesa física");
+        sendClickable(player, "§6▶ §eMáquina Plinko Física §7(/gamble plinko3d)", "/gamble plinko3d", "§aSoltar bola física de Plinko");
+        sendClickable(player, "§6▶ §eRuleta de la Suerte Diaria §7(/gamble daily)", "/gamble daily", "§aGirar gratis cada 24 horas");
+        sendClickable(player, "§6▶ §ePase de Temporada VIP §7(/gamble pass)", "/gamble pass", "§aVer tu progreso y recompensas del pase");
+        sendClickable(player, "§6▶ §eExchange de Fichas $CHIPS §7(/gamble token)", "/gamble token", "§aComprar y vender fichas del casino");
+        sendClickable(player, "§6▶ §eEvento de Atraco Casino Heist §7(/gamble heist)", "/gamble heist", "§aIniciar evento de defensa de bóveda");
+        sendClickable(player, "§6▶ §eLobby de Blackjack §7(/gamble blackjack)", "/gamble blackjack", "§aAbrir menú de mesas de Blackjack");
+        sendClickable(player, "§6▶ §eBolsa de Pozo Progresivo §7(/gamble jackpot)", "/gamble jackpot", "§aVer el pozo acumulado actual");
+
+        if (player.hasPermission("gambling.admin")) {
+            player.sendMessage("");
+            player.sendMessage("§d⚡ [HERRAMIENTAS DE ADMINISTRADOR]");
+            sendClickable(player, "§d• Panel Administrativo GUI", "/gamble admin", "§eAbrir panel de control de administración");
+            sendClickable(player, "§d• Spawnear Ruleta Física", "/gamble spawn roulette", "§eColocar una ruleta en tus pies");
+            sendClickable(player, "§d• Spawnear Mesa de Blackjack", "/gamble spawn blackjack", "§eColocar mesa física de blackjack");
+            sendClickable(player, "§d• Spawnear Máquina de Minas", "/gamble spawn mines", "§eColocar estructura física de minas");
+        }
+        player.sendMessage("§6══════════════════════════════════════════════════");
+    }
+
+    private void sendClickable(Player player, String text, String command, String hover) {
+        TextComponent component = new TextComponent(text);
+        component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));
+        component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(hover).create()));
+        player.spigot().sendMessage(component);
+    }
 }
