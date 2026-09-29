@@ -1,0 +1,27 @@
+# GamblingPlugin Configuration
+
+economy:
+  currency-symbol: "$"
+  
+games:
+  roulette:
+    enabled: true
+    min-bet: 10.0
+    max-bet: 10000.0
+  dice:
+    enabled: true
+    min-bet: 5.0
+    max-bet: 5000.0
+  slots:
+    enabled: true
+    min-bet: 20.0
+    max-bet: 20000.0
+
+messages:
+  prefix: "&6[Casino] &r"
+  no-permission: "&cNo tienes permiso para usar este comando."
+  insufficient-funds: "&cNo tienes suficiente dinero para realizar esta apuesta."
+  bet-placed: "&aHas apostado %amount% a %selection%."
+  win: "&a¡Felicidades! ¡Has ganado %amount%!"
+  loss: "&c¡Mejor suerte la próxima vez!"
+  reload: "&aConfiguración recargada."

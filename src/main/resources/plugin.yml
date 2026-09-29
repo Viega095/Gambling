@@ -1,0 +1,48 @@
+name: VieGambling
+version: '${project.version}'
+main: com.gamblingplugin.GamblingPlugin
+api-version: 1.20
+depend: [Vault]
+authors: [Antigravity]
+description: A complete gambling plugin with multiple games and customizable structures.
+
+commands:
+  gamble:
+    description: Main command for the gambling plugin
+    usage: /gamble <args>
+    permission: gambling.use
+
+permissions:
+  gambling.admin:
+    description: Full admin access to all gambling features
+    default: op
+    children:
+      gambling.spawn: true
+      gambling.remove: true
+      gambling.list: true
+      gambling.play: true
+      gambling.jackpot: true
+  
+  gambling.play:
+    description: Allows playing gambling games
+    default: true
+  
+  gambling.spawn:
+    description: Allows spawning game structures
+    default: op
+  
+  gambling.remove:
+    description: Allows removing game structures
+    default: op
+  
+  gambling.list:
+    description: Allows viewing list of structures
+    default: op
+  
+  gambling.jackpot:
+    description: Allows viewing jackpot information
+    default: true
+  
+  gambling.use:
+    description: Basic permission to use /gamble command
+    default: true
