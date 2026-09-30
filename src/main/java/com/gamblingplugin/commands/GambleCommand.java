@@ -47,21 +47,30 @@ public class GambleCommand implements CommandExecutor {
             return true;
         }
 
-        if (args.length == 1) {
-            if (args[0].equalsIgnoreCase("update") || args[0].equalsIgnoreCase("autoupdate")) {
-                if (!player.hasPermission("gambling.admin")) {
-                    player.sendMessage(plugin.getConfigManager().getMessage("no-permission"));
-                    return true;
-                }
-                plugin.getUpdateManager().checkUpdate(player, true);
+        if (args.length >= 1 && (args[0].equalsIgnoreCase("update") || args[0].equalsIgnoreCase("autoupdate"))) {
+            if (!player.hasPermission("gambling.admin")) {
+                player.sendMessage(plugin.getConfigManager().getMessage("no-permission"));
                 return true;
             }
+            if (args.length >= 2 && (args[1].equalsIgnoreCase("apply") || args[1].equalsIgnoreCase("download"))) {
+                plugin.getUpdateManager().applyAutoUpdate(player);
+            } else {
+                plugin.getUpdateManager().checkUpdate(player, true);
+            }
+            return true;
+        }
+
+        if (args.length == 1) {
             if (args[0].equalsIgnoreCase("reload")) {
                 if (!player.hasPermission("gambling.admin")) {
                     player.sendMessage(plugin.getConfigManager().getMessage("no-permission"));
                     return true;
                 }
                 plugin.getUpdateManager().performLiveReload(player);
+                return true;
+            }
+            if (args[0].equalsIgnoreCase("vault") || args[0].equalsIgnoreCase("card") || args[0].equalsIgnoreCase("loyalty")) {
+                plugin.getCasinoVaultAndLoyalty().openVaultGUI(player);
                 return true;
             }
             if (args[0].equalsIgnoreCase("baccarat") || args[0].equalsIgnoreCase("puntobanco")) {
@@ -905,6 +914,7 @@ public class GambleCommand implements CommandExecutor {
         player.sendMessage("§6╚════════════════════════════════════════════════╝");
         player.sendMessage("§7Haz clic en cualquier juego para probarlo al instante:");
 
+        sendClickable(player, "§6▶ §eBóveda Segura & Tarjeta VIP §7(/gamble vault)", "/gamble vault", "§aGuardar saldo, ganar interés diario y reclamar cashback");
         sendClickable(player, "§6▶ §eHipódromo y Carreras de Caballos §7(/gamble race)", "/gamble race", "§aApostar en carreras de caballos animadas");
         sendClickable(player, "§6▶ §eCohete Crash 3D Ascendente §7(/gamble crash3d 100)", "/gamble crash3d 100", "§aApostar en el cohete y retirar antes de la explosión");
         sendClickable(player, "§6▶ §eTragamonedas 3D en el Mundo §7(/gamble slots3d)", "/gamble slots3d", "§aProbar máquina tragamonedas física 3D animada");
