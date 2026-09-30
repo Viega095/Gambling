@@ -461,8 +461,20 @@ public class GambleCommand implements CommandExecutor {
             } else if (type.equals("blackjack")) {
                 plugin.getStructureManager().spawnBlackjackStructure(spawnLoc);
                 player.sendMessage("§aBlackjack table spawned!");
+            } else if (type.equals("crash") || type.equals("crash3d")) {
+                plugin.getStructureManager().spawnCrashStructure(spawnLoc);
+                player.sendMessage("§a✦ Estructura y plataforma interactiva del Cohete Crash 3D generada!");
+            } else if (type.equals("baccarat")) {
+                plugin.getStructureManager().spawnBaccaratStructure(spawnLoc);
+                player.sendMessage("§a✦ Mesa interactiva de Baccarat Punto Banco generada!");
+            } else if (type.equals("lottery")) {
+                plugin.getStructureManager().spawnLotteryStructure(spawnLoc);
+                player.sendMessage("§a✦ Quiosco interactivo de Lotería Nacional generado!");
+            } else if (type.equals("lounge") || type.equals("bar")) {
+                plugin.getStructureManager().spawnVIPLoungeStructure(spawnLoc);
+                player.sendMessage("§a✦ Barra interactiva del VIP Bar & Lounge generada!");
             } else {
-                player.sendMessage("§cUnknown structure type.");
+                player.sendMessage("§cTipo desconocido. Opciones: roulette, dice, coinflip, mines, case, plinko, blackjack, crash, baccarat, lottery, lounge");
             }
             return true;
         }

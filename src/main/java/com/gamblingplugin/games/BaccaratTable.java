@@ -198,6 +198,9 @@ public class BaccaratTable implements Listener {
         }
         inv.setItem(49, deal);
 
+        // Guide book (Slot 53)
+        inv.setItem(53, com.gamblingplugin.utils.TutorialBookUtils.getBaccaratGuide());
+
         player.openInventory(inv);
     }
 

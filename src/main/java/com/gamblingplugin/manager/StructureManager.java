@@ -25,6 +25,10 @@ public class StructureManager {
     private final Map<Location, com.gamblingplugin.structures.CaseStructure> caseStructures = new HashMap<>();
     private final Map<Location, com.gamblingplugin.structures.PlinkoStructure> plinkoStructures = new HashMap<>();
     private final Map<Location, com.gamblingplugin.structures.BlackjackStructure> blackjackStructures = new HashMap<>();
+    private final Map<Location, com.gamblingplugin.structures.CrashStructure> crashStructures = new HashMap<>();
+    private final Map<Location, com.gamblingplugin.structures.BaccaratStructure> baccaratStructures = new HashMap<>();
+    private final Map<Location, com.gamblingplugin.structures.LotteryStructure> lotteryStructures = new HashMap<>();
+    private final Map<Location, com.gamblingplugin.structures.VIPLoungeStructure> vipLoungeStructures = new HashMap<>();
     private File structuresFile;
     private FileConfiguration structuresConfig;
     private int nextRouletteId = 1;
@@ -534,5 +538,57 @@ public class StructureManager {
         }
 
         return nearest;
+    }
+
+    public void spawnCrashStructure(Location loc) {
+        com.gamblingplugin.structures.CrashStructure crash = new com.gamblingplugin.structures.CrashStructure(plugin, loc);
+        crash.spawn();
+        crashStructures.put(loc, crash);
+    }
+
+    public void spawnBaccaratStructure(Location loc) {
+        com.gamblingplugin.structures.BaccaratStructure baccarat = new com.gamblingplugin.structures.BaccaratStructure(plugin, loc);
+        baccarat.spawn();
+        baccaratStructures.put(loc, baccarat);
+    }
+
+    public void spawnLotteryStructure(Location loc) {
+        com.gamblingplugin.structures.LotteryStructure lottery = new com.gamblingplugin.structures.LotteryStructure(plugin, loc);
+        lottery.spawn();
+        lotteryStructures.put(loc, lottery);
+    }
+
+    public void spawnVIPLoungeStructure(Location loc) {
+        com.gamblingplugin.structures.VIPLoungeStructure lounge = new com.gamblingplugin.structures.VIPLoungeStructure(plugin, loc);
+        lounge.spawn();
+        vipLoungeStructures.put(loc, lounge);
+    }
+
+    public com.gamblingplugin.structures.CrashStructure getCrashStructure(Location loc) {
+        for (com.gamblingplugin.structures.CrashStructure c : crashStructures.values()) {
+            if (c.isNearby(loc)) return c;
+        }
+        return null;
+    }
+
+    public com.gamblingplugin.structures.BaccaratStructure getBaccaratStructure(Location loc) {
+        for (com.gamblingplugin.structures.BaccaratStructure b : baccaratStructures.values()) {
+            if (b.isNearby(loc)) return b;
+        }
+        return null;
+    }
+
+    public com.gamblingplugin.structures.LotteryStructure getLotteryStructure(Location loc) {
+        for (com.gamblingplugin.structures.LotteryStructure l : lotteryStructures.values()) {
+            if (l.isNearby(loc)) return l;
+        }
+        return null;
+    }
+
+    public com.gamblingplugin.structures.VIPLoungeStructure getVIPLoungeStructure(Location loc) {
+        for (com.gamblingplugin.structures.VIPLoungeStructure v : vipLoungeStructures.values()) {
+            if (v.isNearby(loc)) return v;
+        }
+        return null;
     }
 }

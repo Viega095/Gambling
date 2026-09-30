@@ -115,6 +115,9 @@ public class CasinoVIPLounge implements Listener {
         }
         inv.setItem(16, whisky);
 
+        // Guide book (Slot 26)
+        inv.setItem(26, com.gamblingplugin.utils.TutorialBookUtils.getLoungeGuide());
+
         player.openInventory(inv);
     }
 
