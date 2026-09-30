@@ -48,6 +48,22 @@ public class GambleCommand implements CommandExecutor {
         }
 
         if (args.length == 1) {
+            if (args[0].equalsIgnoreCase("update") || args[0].equalsIgnoreCase("autoupdate")) {
+                if (!player.hasPermission("gambling.admin")) {
+                    player.sendMessage(plugin.getConfigManager().getMessage("no-permission"));
+                    return true;
+                }
+                plugin.getUpdateManager().checkUpdate(player, true);
+                return true;
+            }
+            if (args[0].equalsIgnoreCase("reload")) {
+                if (!player.hasPermission("gambling.admin")) {
+                    player.sendMessage(plugin.getConfigManager().getMessage("no-permission"));
+                    return true;
+                }
+                plugin.getUpdateManager().performLiveReload(player);
+                return true;
+            }
             if (args[0].equalsIgnoreCase("baccarat") || args[0].equalsIgnoreCase("puntobanco")) {
                 plugin.getBaccaratTable().openGUI(player);
                 return true;
@@ -313,6 +329,19 @@ public class GambleCommand implements CommandExecutor {
                 }
                 return true;
             }
+        }
+
+        if (args[0].equalsIgnoreCase("update") || args[0].equalsIgnoreCase("autoupdate")) {
+            if (!player.hasPermission("gambling.admin")) {
+                player.sendMessage(plugin.getConfigManager().getMessage("no-permission"));
+                return true;
+            }
+            if (args.length >= 2 && (args[1].equalsIgnoreCase("apply") || args[1].equalsIgnoreCase("download"))) {
+                plugin.getUpdateManager().applyAutoUpdate(player);
+            } else {
+                plugin.getUpdateManager().checkUpdate(player, true);
+            }
+            return true;
         }
 
         if (args[0].equalsIgnoreCase("crash3d") || args[0].equalsIgnoreCase("crash")) {
@@ -893,6 +922,8 @@ public class GambleCommand implements CommandExecutor {
         if (player.hasPermission("gambling.admin")) {
             player.sendMessage("");
             player.sendMessage("§d⚡ [HERRAMIENTAS DE ADMINISTRADOR]");
+            sendClickable(player, "§a• Auto-Update / Verificar GitHub", "/gamble update", "§eVerificar y descargar actualizaciones de GitHub");
+            sendClickable(player, "§a• Recarga en Caliente (Hot-Reload)", "/gamble reload", "§eRecargar configuración y juegos sin reiniciar");
             sendClickable(player, "§d• Iniciar Carrera de Caballos", "/gamble race start", "§eLanzar carrera de caballos en tu posición");
             sendClickable(player, "§d• Iniciar Vuelo Cohete Crash 3D", "/gamble crash3d start", "§eDespegar cohete crash en tu posición");
             sendClickable(player, "§d• Spawnear Holograma Leaderboard", "/gamble hologram spawn", "§eCrear podio y pozo flotante");

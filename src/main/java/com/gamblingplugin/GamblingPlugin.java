@@ -121,9 +121,13 @@ public class GamblingPlugin extends JavaPlugin {
         this.lotteryDrawEngine = new com.gamblingplugin.manager.LotteryDrawEngine(this);
         this.casinoVIPLounge = new com.gamblingplugin.manager.CasinoVIPLounge(this);
         this.crashBettingAndCashoutGUI = new com.gamblingplugin.gui.CrashBettingAndCashoutGUI(this);
+        this.updateManager = new com.gamblingplugin.updater.GamblingUpdateManager(this);
+        this.updateManager.startAsyncCheck();
+
         getServer().getPluginManager().registerEvents(this.baccaratTable, this);
         getServer().getPluginManager().registerEvents(this.casinoVIPLounge, this);
         getServer().getPluginManager().registerEvents(this.crashBettingAndCashoutGUI, this);
+        getServer().getPluginManager().registerEvents(this.updateManager, this);
 
         getLogger().info("GamblingPlugin has been enabled!");
     }
@@ -266,8 +270,13 @@ public class GamblingPlugin extends JavaPlugin {
     }
 
     private com.gamblingplugin.gui.CrashBettingAndCashoutGUI crashBettingAndCashoutGUI;
+    private com.gamblingplugin.updater.GamblingUpdateManager updateManager;
 
     public com.gamblingplugin.gui.CrashBettingAndCashoutGUI getCrashBettingAndCashoutGUI() {
         return crashBettingAndCashoutGUI;
+    }
+
+    public com.gamblingplugin.updater.GamblingUpdateManager getUpdateManager() {
+        return updateManager;
     }
 }

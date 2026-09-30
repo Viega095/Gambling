@@ -35,7 +35,7 @@ public class GambleTabCompleter implements TabCompleter {
 
             // Admin commands
             if (player.hasPermission("gambling.admin")) {
-                subcommands.addAll(Arrays.asList("admin", "hologram", "spawn", "remove", "list", "tp"));
+                subcommands.addAll(Arrays.asList("admin", "update", "reload", "hologram", "spawn", "remove", "list", "tp"));
             }
 
             return filterStartingWith(subcommands, args[0]);
@@ -45,6 +45,12 @@ public class GambleTabCompleter implements TabCompleter {
             String subcommand = args[0].toLowerCase();
 
             switch (subcommand) {
+                case "update":
+                    if (player.hasPermission("gambling.admin")) {
+                        return filterStartingWith(Arrays.asList("check", "apply", "download"), args[1]);
+                    }
+                    break;
+
                 case "lottery":
                     List<String> lSubs = new ArrayList<>(Arrays.asList("buy", "info"));
                     if (player.hasPermission("gambling.admin")) lSubs.add("draw");
