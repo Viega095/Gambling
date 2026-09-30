@@ -28,7 +28,7 @@ public class GambleTabCompleter implements TabCompleter {
         if (args.length == 1) {
             // Main subcommands
             List<String> subcommands = new ArrayList<>(Arrays.asList(
-                    "guide", "help", "vault", "card", "loyalty", "baccarat", "lottery", "lounge", "bar", "race", "crash3d", "cashout", "slots3d", "blackjack3d", "plinko3d", "pass", "daily", "heist",
+                    "guide", "help", "test", "lab", "demo", "vault", "card", "loyalty", "baccarat", "lottery", "lounge", "bar", "race", "crash3d", "cashout", "slots3d", "blackjack3d", "plinko3d", "pass", "daily", "heist",
                     "token", "chips", "vip", "jackpot", "top", "blackjack", "roulette", "dice",
                     "slots", "coinflip", "mines", "plinko", "case"
             ));

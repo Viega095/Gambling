@@ -69,6 +69,10 @@ public class GambleCommand implements CommandExecutor {
                 plugin.getUpdateManager().performLiveReload(player);
                 return true;
             }
+            if (args[0].equalsIgnoreCase("test") || args[0].equalsIgnoreCase("lab") || args[0].equalsIgnoreCase("demo")) {
+                plugin.getCasinoTestLabGUI().open(player);
+                return true;
+            }
             if (args[0].equalsIgnoreCase("vault") || args[0].equalsIgnoreCase("card") || args[0].equalsIgnoreCase("loyalty")) {
                 plugin.getCasinoVaultAndLoyalty().openVaultGUI(player);
                 return true;
@@ -911,9 +915,7 @@ public class GambleCommand implements CommandExecutor {
     private void sendInteractiveGuide(Player player) {
         player.sendMessage("§6╔════════════════════════════════════════════════╗");
         player.sendMessage("§6║       §e🎰 GUÍA MAESTRA DE CASINO Y APUESTAS§6      ║");
-        player.sendMessage("§6╚════════════════════════════════════════════════╝");
-        player.sendMessage("§7Haz clic en cualquier juego para probarlo al instante:");
-
+        sendClickable(player, "§6🧪 §l[ABRIR PANEL MAESTRO DE PRUEBAS DEL CASINO GUI]", "/gamble test", "§aAbre el laboratorio visual para probar todos los juegos y jackpots");
         sendClickable(player, "§6▶ §eBóveda Segura & Tarjeta VIP §7(/gamble vault)", "/gamble vault", "§aGuardar saldo, ganar interés diario y reclamar cashback");
         sendClickable(player, "§6▶ §eHipódromo y Carreras de Caballos §7(/gamble race)", "/gamble race", "§aApostar en carreras de caballos animadas");
         sendClickable(player, "§6▶ §eCohete Crash 3D Ascendente §7(/gamble crash3d 100)", "/gamble crash3d 100", "§aApostar en el cohete y retirar antes de la explosión");
