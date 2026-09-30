@@ -48,6 +48,31 @@ public class GambleCommand implements CommandExecutor {
         }
 
         if (args.length == 1) {
+            if (args[0].equalsIgnoreCase("baccarat") || args[0].equalsIgnoreCase("puntobanco")) {
+                plugin.getBaccaratTable().openGUI(player);
+                return true;
+            }
+            if (args[0].equalsIgnoreCase("lounge") || args[0].equalsIgnoreCase("bar")) {
+                plugin.getCasinoVIPLounge().openLoungeMenu(player);
+                return true;
+            }
+            if (args[0].equalsIgnoreCase("lottery")) {
+                com.gamblingplugin.manager.LotteryDrawEngine lot = plugin.getLotteryDrawEngine();
+                player.sendMessage("§6╔════════════════════════════════════════════════╗");
+                player.sendMessage("§6║      §e🎫 LOTERÍA NACIONAL PROGRESIVA DEL SERVIDOR  §6║");
+                player.sendMessage("§6╠════════════════════════════════════════════════╝");
+                player.sendMessage("§6║ §aPozo acumulado: §e§l" + (plugin.getEconomyManager().getEconomy() != null ? plugin.getEconomyManager().format(lot.getProgressivePot()) : "$" + lot.getProgressivePot()));
+                player.sendMessage("§6║ §7Precio del boleto: §f$" + lot.getTicketPrice());
+                player.sendMessage("§6║ §7Tus boletos activos: §e" + lot.getTickets(player.getUniqueId()) + " boletos");
+                player.sendMessage("§6║ §7Total de boletos en juego: §f" + lot.getTotalTickets());
+                player.sendMessage("§6║ §7Próximo sorteo en: §b" + (lot.getRemainingSeconds() / 60) + "m " + (lot.getRemainingSeconds() % 60) + "s");
+                player.sendMessage("§6║ §eComprar boletos: §a/gamble lottery buy <cantidad>");
+                if (player.hasPermission("gambling.admin")) {
+                    player.sendMessage("§6║ §cForzar sorteo inmediato: §e/gamble lottery draw");
+                }
+                player.sendMessage("§6╚════════════════════════════════════════════════╝");
+                return true;
+            }
             if (args[0].equalsIgnoreCase("vip")) {
                 plugin.getVIPGUI().open(player);
                 return true;
@@ -245,6 +270,26 @@ public class GambleCommand implements CommandExecutor {
                     player.sendMessage("");
                 }
 
+                return true;
+            }
+        }
+
+        if (args[0].equalsIgnoreCase("lottery")) {
+            if (args.length >= 2 && args[1].equalsIgnoreCase("draw")) {
+                if (!player.hasPermission("gambling.admin")) {
+                    player.sendMessage(plugin.getConfigManager().getMessage("no-permission"));
+                    return true;
+                }
+                plugin.getLotteryDrawEngine().executeDraw();
+                return true;
+            }
+            if (args.length >= 3 && args[1].equalsIgnoreCase("buy")) {
+                try {
+                    int count = Integer.parseInt(args[2]);
+                    plugin.getLotteryDrawEngine().buyTickets(player, count);
+                } catch (NumberFormatException e) {
+                    player.sendMessage("§cUso: /gamble lottery buy <cantidad>");
+                }
                 return true;
             }
         }
@@ -827,8 +872,10 @@ public class GambleCommand implements CommandExecutor {
         sendClickable(player, "§6▶ §eRuleta de la Suerte Diaria §7(/gamble daily)", "/gamble daily", "§aGirar gratis cada 24 horas");
         sendClickable(player, "§6▶ §ePase de Temporada VIP §7(/gamble pass)", "/gamble pass", "§aVer tu progreso y recompensas del pase");
         sendClickable(player, "§6▶ §eExchange de Fichas $CHIPS §7(/gamble token)", "/gamble token", "§aComprar y vender fichas del casino");
-        sendClickable(player, "§6▶ §eEvento de Atraco Casino Heist §7(/gamble heist)", "/gamble heist", "§aIniciar evento de defensa de bóveda");
         sendClickable(player, "§6▶ §eLobby de Blackjack §7(/gamble blackjack)", "/gamble blackjack", "§aAbrir menú de mesas de Blackjack");
+        sendClickable(player, "§6▶ §eMesa de Baccarat Punto Banco §7(/gamble baccarat)", "/gamble baccarat", "§aJugar Baccarat interactivo Jugador vs Banca");
+        sendClickable(player, "§6▶ §eLotería Progresiva del Servidor §7(/gamble lottery)", "/gamble lottery", "§aComprar boletos para el gran sorteo global");
+        sendClickable(player, "§6▶ §eBar & VIP Cocktail Lounge §7(/gamble lounge)", "/gamble lounge", "§aOrdenar bebidas con buffs y efectos de suerte");
         sendClickable(player, "§6▶ §eBolsa de Pozo Progresivo §7(/gamble jackpot)", "/gamble jackpot", "§aVer el pozo acumulado actual");
 
         if (player.hasPermission("gambling.admin")) {

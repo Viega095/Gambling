@@ -116,6 +116,13 @@ public class GamblingPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new com.gamblingplugin.gui.StatsViewerGUI(this), this);
         getServer().getPluginManager().registerEvents(vipGUI, this);
 
+        // Register Round 2 Expansions
+        this.baccaratTable = new com.gamblingplugin.games.BaccaratTable(this);
+        this.lotteryDrawEngine = new com.gamblingplugin.manager.LotteryDrawEngine(this);
+        this.casinoVIPLounge = new com.gamblingplugin.manager.CasinoVIPLounge(this);
+        getServer().getPluginManager().registerEvents(this.baccaratTable, this);
+        getServer().getPluginManager().registerEvents(this.casinoVIPLounge, this);
+
         getLogger().info("GamblingPlugin has been enabled!");
     }
 
@@ -238,5 +245,21 @@ public class GamblingPlugin extends JavaPlugin {
     public com.gamblingplugin.manager.CasinoHologramEngine getCasinoHologramEngine() {
         if (casinoHologramEngine == null) casinoHologramEngine = new com.gamblingplugin.manager.CasinoHologramEngine(this);
         return casinoHologramEngine;
+    }
+
+    private com.gamblingplugin.games.BaccaratTable baccaratTable;
+    private com.gamblingplugin.manager.LotteryDrawEngine lotteryDrawEngine;
+    private com.gamblingplugin.manager.CasinoVIPLounge casinoVIPLounge;
+
+    public com.gamblingplugin.games.BaccaratTable getBaccaratTable() {
+        return baccaratTable;
+    }
+
+    public com.gamblingplugin.manager.LotteryDrawEngine getLotteryDrawEngine() {
+        return lotteryDrawEngine;
+    }
+
+    public com.gamblingplugin.manager.CasinoVIPLounge getCasinoVIPLounge() {
+        return casinoVIPLounge;
     }
 }

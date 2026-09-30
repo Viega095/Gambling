@@ -28,7 +28,7 @@ public class GambleTabCompleter implements TabCompleter {
         if (args.length == 1) {
             // Main subcommands
             List<String> subcommands = new ArrayList<>(Arrays.asList(
-                    "guide", "help", "race", "crash3d", "cashout", "slots3d", "blackjack3d", "plinko3d", "pass", "daily", "heist",
+                    "guide", "help", "baccarat", "lottery", "lounge", "bar", "race", "crash3d", "cashout", "slots3d", "blackjack3d", "plinko3d", "pass", "daily", "heist",
                     "token", "chips", "vip", "jackpot", "top", "blackjack", "roulette", "dice",
                     "slots", "coinflip", "mines", "plinko", "case"
             ));
@@ -45,6 +45,11 @@ public class GambleTabCompleter implements TabCompleter {
             String subcommand = args[0].toLowerCase();
 
             switch (subcommand) {
+                case "lottery":
+                    List<String> lSubs = new ArrayList<>(Arrays.asList("buy", "info"));
+                    if (player.hasPermission("gambling.admin")) lSubs.add("draw");
+                    return filterStartingWith(lSubs, args[1]);
+
                 case "race":
                     List<String> rSubs = new ArrayList<>(Arrays.asList("bet"));
                     if (player.hasPermission("gambling.admin")) rSubs.add("start");
