@@ -122,6 +122,10 @@ public class GamblingPlugin extends JavaPlugin {
         this.casinoVIPLounge = new com.gamblingplugin.manager.CasinoVIPLounge(this);
         this.crashBettingAndCashoutGUI = new com.gamblingplugin.gui.CrashBettingAndCashoutGUI(this);
         this.casinoVaultAndLoyalty = new com.gamblingplugin.manager.CasinoVaultAndLoyalty(this);
+        this.casinoTycoonManager = new com.gamblingplugin.games.tycoon.CasinoTycoonManager(this);
+        this.multiplayerPokerEngine = new com.gamblingplugin.games.poker.MultiplayerPokerEngine(this);
+        this.megaWheelOfFortune = new com.gamblingplugin.games.wheel.MegaWheelOfFortune(this);
+        this.binaryFuturesMarket = new com.gamblingplugin.games.futures.BinaryFuturesMarket(this);
         this.casinoTestLabGUI = new com.gamblingplugin.gui.CasinoTestLabGUI(this);
         this.updateManager = new com.gamblingplugin.updater.GamblingUpdateManager(this);
         this.updateManager.startAsyncCheck();
@@ -130,6 +134,10 @@ public class GamblingPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(this.casinoVIPLounge, this);
         getServer().getPluginManager().registerEvents(this.crashBettingAndCashoutGUI, this);
         getServer().getPluginManager().registerEvents(this.casinoVaultAndLoyalty, this);
+        getServer().getPluginManager().registerEvents(this.casinoTycoonManager, this);
+        getServer().getPluginManager().registerEvents(this.multiplayerPokerEngine, this);
+        getServer().getPluginManager().registerEvents(this.megaWheelOfFortune, this);
+        getServer().getPluginManager().registerEvents(this.binaryFuturesMarket, this);
         getServer().getPluginManager().registerEvents(this.casinoTestLabGUI, this);
         getServer().getPluginManager().registerEvents(this.updateManager, this);
 
@@ -292,5 +300,26 @@ public class GamblingPlugin extends JavaPlugin {
 
     public com.gamblingplugin.updater.GamblingUpdateManager getUpdateManager() {
         return updateManager;
+    }
+
+    private com.gamblingplugin.games.tycoon.CasinoTycoonManager casinoTycoonManager;
+    private com.gamblingplugin.games.poker.MultiplayerPokerEngine multiplayerPokerEngine;
+    private com.gamblingplugin.games.wheel.MegaWheelOfFortune megaWheelOfFortune;
+    private com.gamblingplugin.games.futures.BinaryFuturesMarket binaryFuturesMarket;
+
+    public com.gamblingplugin.games.tycoon.CasinoTycoonManager getCasinoTycoonManager() {
+        return casinoTycoonManager;
+    }
+
+    public com.gamblingplugin.games.poker.MultiplayerPokerEngine getMultiplayerPokerEngine() {
+        return multiplayerPokerEngine;
+    }
+
+    public com.gamblingplugin.games.wheel.MegaWheelOfFortune getMegaWheelOfFortune() {
+        return megaWheelOfFortune;
+    }
+
+    public com.gamblingplugin.games.futures.BinaryFuturesMarket getBinaryFuturesMarket() {
+        return binaryFuturesMarket;
     }
 }

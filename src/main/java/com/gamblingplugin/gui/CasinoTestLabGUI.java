@@ -76,6 +76,10 @@ public class CasinoTestLabGUI implements Listener {
         inv.setItem(16, createBtn(Material.POTION, "§d🍸 Bar VIP & Bebidas de Suerte",
                 Arrays.asList("§7Abre la carta de cócteles especiales", "§7con efectos y potenciadores de suerte.", "", "§d▶ Haz clic para abrir")));
 
+        // Slot 17: Casino Tycoon (Dueño de Mesas)
+        inv.setItem(17, createBtn(Material.DARK_OAK_SIGN, "§6🏛️ Casino Tycoon (Dueño de Mesas)",
+                Arrays.asList("§7Compra mesas de Blackjack, Ruleta", "§7y genera ganancias pasivas del casino.", "", "§6▶ Haz clic para abrir")));
+
         // Slot 19: Mesa de Baccarat Punto Banco
         inv.setItem(19, createBtn(Material.MAP, "§2🃏 Mesa de Baccarat Punto Banco",
                 Arrays.asList("§7Abre la mesa interactiva de Baccarat", "§7apostando a Jugador, Banca o Empate.", "", "§2▶ Haz clic para abrir")));
@@ -104,6 +108,10 @@ public class CasinoTestLabGUI implements Listener {
         inv.setItem(25, createBtn(Material.DISPENSER, "§6🎰 Tragamonedas Física 3D",
                 Arrays.asList("§7Genera y gira los rodillos mecánicos 3D", "§7en el mundo con sonidos de monedas.", "", "§6▶ Haz clic para girar")));
 
+        // Slot 26: Texas Hold'em Poker Multijugador
+        inv.setItem(26, createBtn(Material.PAPER, "§2🀄 Texas Hold'em Poker Multijugador",
+                Arrays.asList("§7Mesa interactiva para 2-6 jugadores con", "§7ciegas, cartas comunitarias y bote.", "", "§2▶ Haz clic para sentarte")));
+
         // Slot 28: Apertura de Cajas (Cases)
         inv.setItem(28, createBtn(Material.CHEST, "§b📦 Apertura de Cajas (Case Opening)",
                 Arrays.asList("§7Abre cajas con animación de ruleta CS:GO", "§7para ganar premios legendarios.", "", "§b▶ Haz clic para abrir")));
@@ -131,6 +139,10 @@ public class CasinoTestLabGUI implements Listener {
         // Slot 34: Visor de Estadísticas
         inv.setItem(34, createBtn(Material.BOOK, "§d📊 Visor de Estadísticas Personales",
                 Arrays.asList("§7Abre tu historial de apuestas, partidas", "§7ganadas, perdidas y balance neto.", "", "§d▶ Haz clic para abrir")));
+
+        // Slot 35: Futuros Binarios 30s
+        inv.setItem(35, createBtn(Material.NETHERITE_INGOT, "§e📉 Futuros Binarios (30s)",
+                Arrays.asList("§7Opera contratos rápidos de subida/bajada", "§7con gráficos de velas en tiempo real.", "", "§e▶ Haz clic para operar")));
 
         // Slot 48: Auto-Update Check
         inv.setItem(48, createBtn(Material.EXPERIENCE_BOTTLE, "§a🔄 Probar Auto-Update en GitHub",
@@ -213,6 +225,13 @@ public class CasinoTestLabGUI implements Listener {
                 plugin.getCasinoVIPLounge().openLoungeMenu(player);
                 break;
 
+            case 17: // Tycoon
+                player.closeInventory();
+                if (plugin.getCasinoTycoonManager() != null) {
+                    plugin.getCasinoTycoonManager().openTycoonGUI(player);
+                }
+                break;
+
             case 19: // Baccarat
                 player.closeInventory();
                 plugin.getBaccaratTable().openGUI(player);
@@ -248,6 +267,13 @@ public class CasinoTestLabGUI implements Listener {
                 player.performCommand("gamble slots3d");
                 break;
 
+            case 26: // Multiplayer Poker
+                player.closeInventory();
+                if (plugin.getMultiplayerPokerEngine() != null) {
+                    plugin.getMultiplayerPokerEngine().openPokerTableGUI(player);
+                }
+                break;
+
             case 28: // Case
                 player.closeInventory();
                 player.performCommand("gamble case");
@@ -258,9 +284,11 @@ public class CasinoTestLabGUI implements Listener {
                 player.performCommand("gamble coinflip");
                 break;
 
-            case 30: // Daily
+            case 30: // Mega Wheel
                 player.closeInventory();
-                plugin.getDailySpinManager().spinWheel(player);
+                if (plugin.getMegaWheelOfFortune() != null) {
+                    plugin.getMegaWheelOfFortune().openWheelGUI(player);
+                }
                 break;
 
             case 31: // Pass
@@ -282,6 +310,13 @@ public class CasinoTestLabGUI implements Listener {
             case 34: // Stats
                 player.closeInventory();
                 new com.gamblingplugin.gui.StatsViewerGUI(plugin).open(player, player);
+                break;
+
+            case 35: // Binary Futures
+                player.closeInventory();
+                if (plugin.getBinaryFuturesMarket() != null) {
+                    plugin.getBinaryFuturesMarket().openFuturesGUI(player);
+                }
                 break;
 
             case 48: // Update
