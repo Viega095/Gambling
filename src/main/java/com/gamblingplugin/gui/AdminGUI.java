@@ -143,8 +143,7 @@ public class AdminGUI implements Listener {
 
         if (displayName.contains("Estructuras")) {
             player.closeInventory();
-            player.sendMessage("§a[Admin] §7Abriendo gestor de estructuras...");
-            // TODO: Open StructureManagerGUI
+            new StructureManagerGUI(plugin).open(player);
         } else if (displayName.contains("Jugadores")) {
             player.closeInventory();
             player.sendMessage("§a[Admin] §7Abriendo gestor de jugadores...");

@@ -86,6 +86,51 @@ public class TutorialBookUtils {
         ));
     }
 
+    public static ItemStack getDiceGuide() {
+        return createTutorialBook("Dados 3D (Dice)", Arrays.asList(
+                "§7• Apuesta a un número exacto (1-6) o a un rango (Bajo 1-3, Alto 4-6).",
+                "§7• Número exacto paga §66x§7 tu apuesta.",
+                "§7• Rango Bajo / Alto paga §e1.5x§7 tu apuesta.",
+                "§7• ¡El dado rueda físicamente en 3D sobre la mesa!"
+        ));
+    }
+
+    public static ItemStack getCoinflipGuide() {
+        return createTutorialBook("Lanzamiento de Moneda (Coinflip)", Arrays.asList(
+                "§7• Elige entre §6Cara§7 o §7Cruz§7.",
+                "§7• Acierto duplica tu dinero (§a2x§7).",
+                "§7• La moneda salta y gira en el aire con física 3D.",
+                "§7• ¡Rápido, emocionante y con 50% de probabilidad real!"
+        ));
+    }
+
+    public static ItemStack getWheelGuide() {
+        return createTutorialBook("Mega Rueda de la Fortuna", Arrays.asList(
+                "§7• Haz girar la gran rueda vertical con multiplicadores.",
+                "§7• Puedes ganar desde §ax1.5§7 hasta el §d⭐ MEGA PREMIO x50 ⭐§7.",
+                "§7• ¡Giro gratuito cada 24 horas para todos los jugadores!",
+                "§7• La aguja marca el sector ganador con sonido de ruleta."
+        ));
+    }
+
+    public static ItemStack getCaseGuide() {
+        return createTutorialBook("Apertura de Cajas (Cases)", Arrays.asList(
+                "§7• Selecciona la caja de recompensas que desees abrir.",
+                "§7• La caja se abre en 3D mostrando los premios rodando.",
+                "§7• Premios desde objetos raros, dinero, llaves y cosméticos.",
+                "§7• ¡Gran probabilidad de objetos legendarios y netherite!"
+        ));
+    }
+
+    public static ItemStack getSlotsGuide() {
+        return createTutorialBook("Tragamonedas 3D (Slots)", Arrays.asList(
+                "§7• Tira de la palanca para hacer girar los 3 rodillos 3D.",
+                "§7• 2 símbolos iguales pagan §e1.5x§7 tu apuesta.",
+                "§7• 3 símbolos iguales pagan entre §610x§7 y §d50x (Nether Star)§7.",
+                "§7• ¡Opción de activar el Pozo Progresivo JackPot!"
+        ));
+    }
+
     public static ItemStack getLoungeGuide() {
         return createTutorialBook("VIP Cocktail Bar", Arrays.asList(
                 "§7• Ordena cócteles con efectos mágicos y beneficios de suerte.",

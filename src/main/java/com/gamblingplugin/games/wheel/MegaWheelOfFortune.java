@@ -1,6 +1,8 @@
 package com.gamblingplugin.games.wheel;
 
 import com.gamblingplugin.GamblingPlugin;
+import com.gamblingplugin.structures.WheelStructure;
+import com.gamblingplugin.utils.TutorialBookUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -46,11 +48,14 @@ public class MegaWheelOfFortune implements Listener {
         // Circular sector displays (Slots 10, 11, 12, 14, 15, 16, 20, 24, 28, 29, 30, 32, 33, 34)
         int[] wheelSlots = { 10, 11, 12, 14, 15, 16, 20, 24, 28, 29, 30, 32, 33, 34 };
         Material[] colors = { Material.EMERALD, Material.GOLD_INGOT, Material.DIAMOND, Material.NETHER_STAR, Material.AMETHYST_SHARD, Material.LAPIS_LAZULI, Material.REDSTONE };
-        String[] multipliers = { "§aMultiplicador x2", "§eMultiplicador x5", "§bMultiplicador x10", "§d⭐ MEGA PREMIO x50 ⭐", "§6💎 JACKPOT SECRETO", "§eMultiplicador x3", "§cInténtalo de Nuevo" };
+        String[] multipliers = { "§aMultiplicador x2", "§eMultiplicador x5", "§bMultiplicador x10", "§d⭐ MEGA PREMIO x50 ⭐", "§5🔮 PREMIO MÍSTICO x20", "§eMultiplicador x3", "§6⚡ Multiplicador x1.5" };
 
         for (int i = 0; i < wheelSlots.length; i++) {
             inv.setItem(wheelSlots[i], createBtn(colors[i % colors.length], multipliers[i % multipliers.length], Arrays.asList("§7Sector de la Mega Ruleta")));
         }
+
+        // Guide book in slot 36 (bottom left)
+        inv.setItem(36, TutorialBookUtils.getWheelGuide());
 
         // Center Spin Button (Slot 22)
         boolean hasFree = canUseFreeSpin(player);
@@ -63,13 +68,7 @@ public class MegaWheelOfFortune implements Listener {
     }
 
     public void spawnInteractiveStand(Location loc) {
-        if (loc.getWorld() == null) return;
-        org.bukkit.entity.ArmorStand stand = (org.bukkit.entity.ArmorStand) loc.getWorld().spawnEntity(loc, org.bukkit.entity.EntityType.ARMOR_STAND);
-        stand.setVisible(false);
-        stand.setGravity(false);
-        stand.setCustomName("§6🎡 §e§lMEGA RUEDA DE LA FORTUNA §7(Clic Derecho)");
-        stand.setCustomNameVisible(true);
-        stand.setHelmet(new ItemStack(Material.SUNFLOWER));
+        plugin.getStructureManager().spawnWheelStructure(loc);
     }
 
     public boolean canUseFreeSpin(Player player) {
@@ -91,9 +90,17 @@ public class MegaWheelOfFortune implements Listener {
             player.sendMessage(ChatColor.GREEN + "🎁 ¡Has utilizado tu Giro Diario Gratuito!");
         }
 
+        // Check if there is a 3D Wheel Structure nearby
+        WheelStructure wheelStruct = plugin.getStructureManager().getWheelStructure(player.getLocation());
+        if (wheelStruct != null) {
+            wheelStruct.spin(player, 500.0, null);
+            return;
+        }
+
+        // Standalone virtual wheel spin
         new BukkitRunnable() {
             int ticks = 0;
-            int maxTicks = 25;
+            int maxTicks = 30;
 
             @Override
             public void run() {
@@ -120,7 +127,7 @@ public class MegaWheelOfFortune implements Listener {
                         plugin.getEconomyManager().deposit(player, prize);
                         player.sendTitle("§e✨ ¡MULTIPLICADOR x3! ✨", "§a+" + plugin.getEconomyManager().format(prize), 10, 50, 15);
                         player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1.2f);
-                    } else { // x2 or miss
+                    } else { // x1.5
                         double prize = 750.0;
                         plugin.getEconomyManager().deposit(player, prize);
                         player.sendTitle("§a✨ ¡PREMIO x1.5! ✨", "§a+" + plugin.getEconomyManager().format(prize), 10, 40, 10);

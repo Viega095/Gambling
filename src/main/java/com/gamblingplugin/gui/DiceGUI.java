@@ -63,6 +63,9 @@ public class DiceGUI implements Listener {
         highRange.setItemMeta(highMeta);
         inv.setItem(25, highRange);
 
+        // Tutorial Guide Book (slot 22)
+        inv.setItem(22, com.gamblingplugin.utils.TutorialBookUtils.getDiceGuide());
+
         // Decoration
         ItemStack glass = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
         ItemMeta glassMeta = glass.getItemMeta();

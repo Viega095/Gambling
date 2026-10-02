@@ -81,6 +81,14 @@ public class GambleCommand implements CommandExecutor {
                 plugin.getStructureManager().generateCasinoPlaza(player);
                 return true;
             }
+            if (args[0].equalsIgnoreCase("structures") || args[0].equalsIgnoreCase("structure") || args[0].equalsIgnoreCase("mesas")) {
+                if (!player.hasPermission("gambling.admin")) {
+                    player.sendMessage(plugin.getConfigManager().getMessage("no-permission"));
+                    return true;
+                }
+                new com.gamblingplugin.gui.StructureManagerGUI(plugin).open(player);
+                return true;
+            }
             if (args[0].equalsIgnoreCase("vault") || args[0].equalsIgnoreCase("card") || args[0].equalsIgnoreCase("loyalty")) {
                 plugin.getCasinoVaultAndLoyalty().openVaultGUI(player);
                 return true;
@@ -499,6 +507,12 @@ public class GambleCommand implements CommandExecutor {
             } else if (type.equals("coinflip")) {
                 plugin.getStructureManager().spawnCoinflipStructure(spawnLoc);
                 player.sendMessage("§aCoinflip structure spawned!");
+            } else if (type.equals("wheel") || type.equals("rueda")) {
+                plugin.getStructureManager().spawnWheelStructure(spawnLoc);
+                player.sendMessage("§a✦ Mega Rueda de la Fortuna 3D generada!");
+            } else if (type.equals("slots") || type.equals("tragamonedas")) {
+                plugin.getStructureManager().spawnSlotsStructure(spawnLoc);
+                player.sendMessage("§a✦ Máquina Tragamonedas 3D generada!");
             } else if (type.equals("mines")) {
                 plugin.getStructureManager().spawnMinesStructure(spawnLoc);
                 player.sendMessage("§aMines structure spawned!");
@@ -524,7 +538,7 @@ public class GambleCommand implements CommandExecutor {
                 plugin.getStructureManager().spawnVIPLoungeStructure(spawnLoc);
                 player.sendMessage("§a✦ Barra interactiva del VIP Bar & Lounge generada!");
             } else {
-                player.sendMessage("§cTipo desconocido. Opciones: roulette, dice, coinflip, mines, case, plinko, blackjack, crash, baccarat, lottery, lounge");
+                player.sendMessage("§cTipo desconocido. Opciones: roulette, dice, coinflip, wheel, slots, mines, case, plinko, blackjack, crash, baccarat, lottery, lounge");
             }
             return true;
         }

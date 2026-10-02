@@ -91,6 +91,9 @@ public class CaseOpeningGUI implements Listener {
         legendary.setItemMeta(legendaryMeta);
         inv.setItem(16, legendary);
 
+        // Tutorial Guide Book (slot 18)
+        inv.setItem(18, com.gamblingplugin.utils.TutorialBookUtils.getCaseGuide());
+
         // Exit button (slot 26)
         ItemStack exit = new ItemStack(Material.BARRIER);
         ItemMeta exitMeta = exit.getItemMeta();

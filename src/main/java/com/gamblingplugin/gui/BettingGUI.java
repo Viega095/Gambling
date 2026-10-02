@@ -66,10 +66,17 @@ public class BettingGUI implements Listener {
                 "",
                 "§e§lClick para abrir chat!"));
         customBet.setItemMeta(customMeta);
-        inv.setItem(15, customBet);
-
-        // Confirm button
-        updateConfirmButton(inv, 0.0);
+        // Guide book on slot 27 based on gameType
+        ItemStack guideBook = null;
+        if ("dice".equalsIgnoreCase(gameType)) guideBook = com.gamblingplugin.utils.TutorialBookUtils.getDiceGuide();
+        else if ("coinflip".equalsIgnoreCase(gameType)) guideBook = com.gamblingplugin.utils.TutorialBookUtils.getCoinflipGuide();
+        else if ("roulette".equalsIgnoreCase(gameType)) guideBook = com.gamblingplugin.utils.TutorialBookUtils.getRouletteGuide();
+        else if ("mines".equalsIgnoreCase(gameType)) guideBook = com.gamblingplugin.utils.TutorialBookUtils.getMinesGuide();
+        else if ("slots".equalsIgnoreCase(gameType)) guideBook = com.gamblingplugin.utils.TutorialBookUtils.getSlotsGuide();
+        else if ("plinko".equalsIgnoreCase(gameType)) guideBook = com.gamblingplugin.utils.TutorialBookUtils.getPlinkoGuide();
+        if (guideBook != null) {
+            inv.setItem(27, guideBook);
+        }
 
         player.openInventory(inv);
     }
@@ -204,7 +211,6 @@ public class BettingGUI implements Listener {
                 String[] parts = selection.split(":");
                 String betType = parts[0];
                 int specificNumber = Integer.parseInt(parts[1]);
-                plugin.getGameManager().getGame("dice");
                 if (plugin.getGameManager().getGame("dice") instanceof Dice) {
                     ((Dice) plugin.getGameManager().getGame("dice")).playWithBetType(player, currentBet, betType,
                             specificNumber);
@@ -217,6 +223,15 @@ public class BettingGUI implements Listener {
             } else if (gameType.equals("mines")) {
                 // Play Mines game
                 plugin.getGameManager().getMines().play(player, currentBet);
+            } else if (gameType.equals("slots")) {
+                com.gamblingplugin.structures.Slots3DStructure slotStruct = plugin.getStructureManager().getSlotsStructure(player.getLocation());
+                if (slotStruct != null) {
+                    slotStruct.spin(player, currentBet, null);
+                } else {
+                    new com.gamblingplugin.games.PhysicalSlotsCabinet(plugin, player.getLocation()).spin(player, currentBet);
+                }
+            } else if (gameType.equals("plinko")) {
+                new com.gamblingplugin.gui.PlinkoBallSelectionGUI(plugin, "NORMAL").open(player);
             }
             return;
         }

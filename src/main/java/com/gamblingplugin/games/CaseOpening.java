@@ -95,11 +95,25 @@ public class CaseOpening extends Game {
         com.gamblingplugin.gui.CaseAnimationGUI animGUI = new com.gamblingplugin.gui.CaseAnimationGUI(plugin);
         animGUI.open(player, caseType, rarity, price, winnings);
 
-        // Play structure animation
+        // Generate representative prize item
+        org.bukkit.inventory.ItemStack prizeItem;
+        if (rarity == Rarity.LEGENDARY) {
+            prizeItem = new org.bukkit.inventory.ItemStack(org.bukkit.Material.NETHER_STAR);
+        } else if (rarity == Rarity.EPIC) {
+            prizeItem = new org.bukkit.inventory.ItemStack(org.bukkit.Material.TOTEM_OF_UNDYING);
+        } else if (rarity == Rarity.RARE) {
+            prizeItem = new org.bukkit.inventory.ItemStack(org.bukkit.Material.DIAMOND_BLOCK);
+        } else if (rarity == Rarity.UNCOMMON) {
+            prizeItem = new org.bukkit.inventory.ItemStack(org.bukkit.Material.GOLD_BLOCK);
+        } else {
+            prizeItem = new org.bukkit.inventory.ItemStack(org.bukkit.Material.IRON_INGOT);
+        }
+
+        // Play structure 3D animation
         com.gamblingplugin.structures.CaseStructure structure = plugin.getStructureManager()
                 .getCaseStructure(player.getLocation());
         if (structure != null) {
-            structure.playOpenAnimation();
+            structure.open3D(player, prizeItem, null);
         }
 
         // Process winnings after animation (5 seconds)

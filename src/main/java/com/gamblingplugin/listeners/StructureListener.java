@@ -1,7 +1,10 @@
 package com.gamblingplugin.listeners;
 
 import com.gamblingplugin.GamblingPlugin;
+import com.gamblingplugin.gui.BlackjackLobbyGUI;
 import com.gamblingplugin.gui.CaseOpeningGUI;
+import com.gamblingplugin.gui.CoinflipGUI;
+import com.gamblingplugin.gui.DiceGUI;
 import com.gamblingplugin.structures.*;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -58,42 +61,64 @@ public class StructureListener implements Listener {
             return;
         }
 
-        // 2. Blackjack Table
-        if (plugin.getStructureManager().getBlackjackStructure(loc) != null) {
-            event.setCancelled(true);
-            new com.gamblingplugin.gui.BlackjackLobbyGUI(plugin).open(player);
-            return;
-        }
-
-        // 3. Roulette Wheel
-        RouletteWheel wheel = plugin.getStructureManager().getRouletteWheel(loc);
+        // 2. Mega Wheel of Fortune 3D
+        WheelStructure wheel = plugin.getStructureManager().getWheelStructure(loc);
         if (wheel != null) {
             event.setCancelled(true);
             if (!wheel.isSpinning()) {
+                plugin.getMegaWheelOfFortune().openWheelGUI(player);
+            }
+            return;
+        }
+
+        // 3. Slots 3D Cabinet
+        Slots3DStructure slot = plugin.getStructureManager().getSlotsStructure(loc);
+        if (slot != null) {
+            event.setCancelled(true);
+            if (!slot.isSpinning()) {
+                plugin.getBettingGUI().open(player, "slots");
+            }
+            return;
+        }
+
+        // 4. Blackjack Table
+        if (plugin.getStructureManager().getBlackjackStructure(loc) != null) {
+            event.setCancelled(true);
+            new BlackjackLobbyGUI(plugin).open(player);
+            return;
+        }
+
+        // 5. Roulette Wheel
+        RouletteWheel roulette = plugin.getStructureManager().getRouletteWheel(loc);
+        if (roulette != null) {
+            event.setCancelled(true);
+            if (!roulette.isSpinning()) {
                 plugin.getBettingGUI().open(player, "roulette");
             }
             return;
         }
 
-        // 4. Dice Table
+        // 6. Dice Table 3D
         DiceStructure dice = plugin.getStructureManager().getDiceStructure(loc);
         if (dice != null) {
             event.setCancelled(true);
             if (!dice.isRolling()) {
-                plugin.getBettingGUI().open(player, "dice");
+                new DiceGUI(plugin).open(player);
             }
             return;
         }
 
-        // 5. Coinflip Table
+        // 7. Coinflip Table 3D
         CoinflipStructure coinflip = plugin.getStructureManager().getCoinflipStructure(loc);
         if (coinflip != null) {
             event.setCancelled(true);
-            plugin.getBettingGUI().open(player, "coinflip");
+            if (!coinflip.isFlipping()) {
+                new CoinflipGUI(plugin).open(player);
+            }
             return;
         }
 
-        // 6. Mines Field
+        // 8. Mines Field
         MinesStructure mines = plugin.getStructureManager().getMinesStructure(loc);
         if (mines != null) {
             event.setCancelled(true);
@@ -101,15 +126,17 @@ public class StructureListener implements Listener {
             return;
         }
 
-        // 7. Case Opening Station
+        // 9. Case Opening Station
         CaseStructure cs = plugin.getStructureManager().getCaseStructure(loc);
         if (cs != null) {
             event.setCancelled(true);
-            new CaseOpeningGUI(plugin).open(player);
+            if (!cs.isOpening()) {
+                new CaseOpeningGUI(plugin).open(player);
+            }
             return;
         }
 
-        // 8. Plinko Machine
+        // 10. Plinko Machine
         PlinkoStructure plinko = plugin.getStructureManager().getPlinkoStructure(loc);
         if (plinko != null) {
             event.setCancelled(true);
@@ -117,7 +144,7 @@ public class StructureListener implements Listener {
             return;
         }
 
-        // 9. Baccarat Table
+        // 11. Baccarat Table
         if (plugin.getStructureManager().getBaccaratStructure(loc) != null) {
             event.setCancelled(true);
             if (plugin.getBaccaratTable() != null) {
@@ -126,14 +153,14 @@ public class StructureListener implements Listener {
             return;
         }
 
-        // 10. Lottery Booth
+        // 12. Lottery Booth
         if (plugin.getStructureManager().getLotteryStructure(loc) != null) {
             event.setCancelled(true);
             player.performCommand("gamble lottery");
             return;
         }
 
-        // 11. VIP Lounge Bar
+        // 13. VIP Lounge Bar
         if (plugin.getStructureManager().getVIPLoungeStructure(loc) != null) {
             event.setCancelled(true);
             if (plugin.getCasinoVIPLounge() != null) {

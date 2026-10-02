@@ -1,7 +1,7 @@
 package com.gamblingplugin.games;
 
 import com.gamblingplugin.GamblingPlugin;
-import com.gamblingplugin.games.DiceAnimation;
+import com.gamblingplugin.structures.DiceStructure;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -36,27 +36,10 @@ public class Dice extends Game {
             return;
         }
 
-        if (!plugin.getEconomyManager().has(player, bet)) {
-            player.sendMessage(plugin.getConfigManager().getMessage("insufficient-funds"));
-            return;
-        }
-
-        plugin.getEconomyManager().withdraw(player, bet);
-
-        // Contribute to jackpot
-        plugin.getJackpotManager().contributeBet(bet);
-
-        // Set cooldown (10 seconds)
-        plugin.getCooldownManager().setCooldown(player, "dice");
-
-        player.sendMessage(plugin.getConfigManager().getMessage("bet-placed")
-                .replace("%amount%", String.valueOf(bet))
-                .replace("%selection%", String.valueOf(choice)));
-
-        startAnimation(player, bet, "SPECIFIC", choice);
+        playWithBetType(player, bet, "SPECIFIC", choice);
     }
 
-    // New method for GUI-based betting
+    // Method for GUI-based betting & command betting
     public void playWithBetType(Player player, double bet, String betType, int specificNumber) {
         // Check cooldown
         if (plugin.getCooldownManager().hasCooldown(player, "dice")) {
@@ -94,21 +77,15 @@ public class Dice extends Game {
         player.sendMessage("§7Monto: §a$" + String.format("%.2f", bet));
         player.sendMessage("");
 
-        // Find and animate nearest dice structure
-        com.gamblingplugin.structures.DiceStructure diceStruct = plugin.getStructureManager()
-                .getDiceStructure(player.getLocation());
+        int result = random.nextInt(6) + 1;
+
+        // Find and animate nearest dice structure with full 3D physics
+        DiceStructure diceStruct = plugin.getStructureManager().getDiceStructure(player.getLocation());
         if (diceStruct != null) {
-            diceStruct.roll(() -> {
-                // Animation done
-            });
+            diceStruct.roll3D(player, result, null);
         }
 
-        startAnimation(player, bet, betType, specificNumber);
-    }
-
-    private void startAnimation(Player player, double bet, String betType, int specificNumber) {
         new DiceAnimation(plugin).play(player, specificNumber, (v) -> {
-            int result = random.nextInt(6) + 1;
             finalizeGame(player, bet, betType, specificNumber, result);
         });
     }

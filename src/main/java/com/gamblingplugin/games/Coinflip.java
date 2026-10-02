@@ -59,16 +59,14 @@ public class Coinflip {
         player.sendMessage("§7Apuesta: §a$" + String.format("%.2f", bet));
         player.sendMessage("");
 
+        // Determine result immediately
+        Side result = random.nextBoolean() ? Side.HEADS : Side.TAILS;
+
         // Find and animate nearest coinflip structure
         CoinflipStructure structure = plugin.getStructureManager().getCoinflipStructure(player.getLocation());
         if (structure != null) {
-            structure.flip(() -> {
-                // Animation done, continue with result
-            });
+            structure.flip3D(player, result, null);
         }
-
-        // Determine result immediately
-        Side result = random.nextBoolean() ? Side.HEADS : Side.TAILS;
 
         // Show spinning GUI
         com.gamblingplugin.gui.CoinflipSpinGUI spinGUI = new com.gamblingplugin.gui.CoinflipSpinGUI(plugin);

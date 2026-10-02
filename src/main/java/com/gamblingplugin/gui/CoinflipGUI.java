@@ -50,6 +50,9 @@ public class CoinflipGUI implements Listener {
         tails.setItemMeta(tailsMeta);
         inv.setItem(15, tails);
 
+        // Tutorial Guide Book (slot 22)
+        inv.setItem(22, com.gamblingplugin.utils.TutorialBookUtils.getCoinflipGuide());
+
         // Decoration
         ItemStack glass = new ItemStack(Material.YELLOW_STAINED_GLASS_PANE);
         ItemMeta glassMeta = glass.getItemMeta();
@@ -57,7 +60,7 @@ public class CoinflipGUI implements Listener {
         glass.setItemMeta(glassMeta);
 
         for (int i = 0; i < 27; i++) {
-            if (i != 11 && i != 15) {
+            if (i != 11 && i != 15 && i != 22) {
                 inv.setItem(i, glass);
             }
         }
