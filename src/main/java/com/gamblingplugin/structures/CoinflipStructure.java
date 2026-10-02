@@ -94,7 +94,7 @@ public class CoinflipStructure {
 
         new BukkitRunnable() {
             int tick = 0;
-            final int maxTicks = 40;
+            final int maxTicks = 35;
             double currentY = baseLoc.getY();
             double yVelocity = 0.16;
             double pitchAngle = 0;
@@ -111,7 +111,7 @@ public class CoinflipStructure {
 
                 // Physics arc
                 currentY += yVelocity;
-                yVelocity -= 0.008; // gravity
+                yVelocity -= 0.009; // gravity
 
                 if (currentY < baseLoc.getY() && tick > 15) {
                     currentY = baseLoc.getY();
@@ -157,10 +157,7 @@ public class CoinflipStructure {
                         holoStand.setCustomName(outcomeText);
                     }
 
-                    if (player != null) {
-                        player.sendTitle(outcomeText, "§7¡Resultado oficial de la moneda!", 5, 40, 10);
-                    }
-
+                    // Execute callback (finalizeGame in Coinflip.java)
                     if (callback != null) {
                         callback.run();
                     }

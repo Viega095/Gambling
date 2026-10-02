@@ -46,45 +46,44 @@ public class Coinflip {
         }
 
         plugin.getEconomyManager().withdraw(player, bet);
-
-        // Contribute to jackpot
         plugin.getJackpotManager().contributeBet(bet);
-
-        // Set cooldown (10 seconds)
         plugin.getCooldownManager().setCooldown(player, "coinflip");
 
         player.sendMessage("");
-        player.sendMessage("§6§l[VieGambling] Coinflip");
-        player.sendMessage("§7Tu elección: §e" + (chosenSide == Side.HEADS ? "Cara" : "Cruz"));
+        player.sendMessage("§6§l[VieGambling] Coinflip 3D");
+        player.sendMessage("§7Tu elección: §e" + (chosenSide == Side.HEADS ? "Cara (HEADS)" : "Cruz (TAILS)"));
         player.sendMessage("§7Apuesta: §a$" + String.format("%.2f", bet));
         player.sendMessage("");
 
-        // Determine result immediately
+        // Determine result
         Side result = random.nextBoolean() ? Side.HEADS : Side.TAILS;
 
-        // Find and animate nearest coinflip structure
+        // Check if near a 3D physical coinflip structure
         CoinflipStructure structure = plugin.getStructureManager().getCoinflipStructure(player.getLocation());
         if (structure != null) {
-            structure.flip3D(player, result, null);
-        }
-
-        // Show spinning GUI
-        com.gamblingplugin.gui.CoinflipSpinGUI spinGUI = new com.gamblingplugin.gui.CoinflipSpinGUI(plugin);
-        spinGUI.open(player, chosenSide, result, bet);
-
-        // Schedule result processing after GUI animation
-        new BukkitRunnable() {
-            @Override
-            public void run() {
+            // Master 3D table flip (Single authoritative animation)
+            structure.flip3D(player, result, () -> {
                 finalizeGame(player, bet, chosenSide, result);
-            }
-        }.runTaskLater(plugin, 100L); // 5 seconds (3s spin + 2s result display)
+            });
+        } else {
+            // Standalone virtual chest GUI fallback
+            com.gamblingplugin.gui.CoinflipSpinGUI spinGUI = new com.gamblingplugin.gui.CoinflipSpinGUI(plugin);
+            spinGUI.open(player, chosenSide, result, bet);
+
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    finalizeGame(player, bet, chosenSide, result);
+                }
+            }.runTaskLater(plugin, 70L);
+        }
     }
 
     private void finalizeGame(Player player, double bet, Side chosenSide, Side result) {
+        String sideName = (result == Side.HEADS ? "§6Cara (HEADS)" : "§7Cruz (TAILS)");
+
         player.sendMessage("");
-        player.sendMessage("§6§l[VieGambling] §7Resultado:");
-        player.sendMessage("§e  Moneda cayó: " + (result == Side.HEADS ? "§6Cara" : "§7Cruz"));
+        player.sendMessage("§6§l[VieGambling] §7Resultado: " + sideName);
         player.sendMessage("");
 
         if (chosenSide == result) {
@@ -92,38 +91,29 @@ public class Coinflip {
             double payout = bet * 2;
             plugin.getEconomyManager().deposit(player, payout);
             player.sendMessage("§a§l[VieGambling] ¡GANASTE!");
-            player.sendMessage("§7Premio: §a$" + String.format("%.2f", payout));
+            player.sendMessage("§7Premio: §a$" + String.format("%.2f", payout) + " §7(2.0x)");
             player.sendMessage("");
 
-            // Visual effects
-            com.gamblingplugin.effects.ParticleEffects.playWinEffect(player, payout);
-            com.gamblingplugin.effects.ParticleEffects.playCoinflipEffect(player.getLocation());
-            com.gamblingplugin.effects.DisplayManager.showWinTitle(player, payout);
-            com.gamblingplugin.effects.DisplayManager.showCoinflipResult(player,
-                    result == Side.HEADS ? "HEADS" : "TAILS");
+            // Single unified Title & Fanfare
+            player.sendTitle("§a§l¡GANASTE!", sideName + " §a+" + plugin.getEconomyManager().format(payout), 5, 50, 15);
 
-            // Win celebration
             Location loc = player.getLocation();
-            player.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, loc.add(0, 2, 0), 30, 0.5, 0.5, 0.5, 0);
+            player.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, loc.add(0, 1.5, 0), 30, 0.5, 0.5, 0.5, 0);
+            player.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, loc, 25, 0.5, 0.5, 0.5, 0.1);
             player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f);
-            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.7f, 1.3f);
-
+            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.8f, 1.4f);
         } else {
             // LOSE
             player.sendMessage("§c§l[VieGambling] Perdiste");
             player.sendMessage("§7Mejor suerte la próxima vez");
             player.sendMessage("");
 
-            // Visual effects
-            com.gamblingplugin.effects.ParticleEffects.playLossEffect(player);
-            com.gamblingplugin.effects.DisplayManager.showLossTitle(player);
-            com.gamblingplugin.effects.DisplayManager.showCoinflipResult(player,
-                    result == Side.HEADS ? "HEADS" : "TAILS");
-
+            // Single unified Loss Title & Sound
+            player.sendTitle("§c§lPERDISTE", "§7Cayó en " + sideName + " §7| Suerte la próxima", 5, 40, 10);
             player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 0.4f, 1f);
         }
 
-        // Try to win jackpot (regardless of game result)
+        // Try to win jackpot
         if (plugin.getJackpotManager().tryWinJackpot(player, bet)) {
             player.sendMessage("");
             player.sendMessage("§6§l¡BONUS! §7¡También ganaste el §6§lJACKPOT§7!");

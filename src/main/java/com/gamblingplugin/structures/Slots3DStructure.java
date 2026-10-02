@@ -18,19 +18,21 @@ public class Slots3DStructure {
     private final GamblingPlugin plugin;
     private final Location center;
     private ArmorStand holoStand;
+    private ArmorStand jackpotHoloStand;
     private ArmorStand leverStand;
     private final List<ArmorStand> reelStands = new ArrayList<>();
     private BukkitRunnable idleTask;
     private boolean isSpinning = false;
 
     private static final Material[] SYMBOLS = {
+            Material.NETHER_STAR,
             Material.DIAMOND,
             Material.EMERALD,
             Material.GOLD_INGOT,
-            Material.NETHER_STAR,
+            Material.AMETHYST_SHARD,
             Material.REDSTONE,
             Material.LAPIS_LAZULI,
-            Material.AMETHYST_SHARD
+            Material.COPPER_INGOT
     };
 
     public Slots3DStructure(GamblingPlugin plugin, Location center) {
@@ -42,23 +44,32 @@ public class Slots3DStructure {
         World world = center.getWorld();
         if (world == null) return;
 
-        // 1. Hologram Stand
-        holoStand = (ArmorStand) world.spawnEntity(center.clone().add(0, 1.6, 0), EntityType.ARMOR_STAND);
+        // 1. Top Header Hologram
+        holoStand = (ArmorStand) world.spawnEntity(center.clone().add(0, 1.9, 0), EntityType.ARMOR_STAND);
         holoStand.setVisible(false);
         holoStand.setGravity(false);
         holoStand.setMarker(true);
         holoStand.setCustomName("§e§l🎰 TRAGAMONEDAS 3D 🎰");
         holoStand.setCustomNameVisible(true);
 
-        // 2. Lever Stand on right side
-        leverStand = (ArmorStand) world.spawnEntity(center.clone().add(0.6, 0.0, 0), EntityType.ARMOR_STAND);
+        // 2. Jackpot Counter Hologram
+        jackpotHoloStand = (ArmorStand) world.spawnEntity(center.clone().add(0, 1.5, 0), EntityType.ARMOR_STAND);
+        jackpotHoloStand.setVisible(false);
+        jackpotHoloStand.setGravity(false);
+        jackpotHoloStand.setMarker(true);
+        double pot = plugin.getJackpotManager().getJackpotAmount();
+        jackpotHoloStand.setCustomName("§6✦ POZO JACKPOT: §a$" + String.format("%.2f", pot) + " §6✦");
+        jackpotHoloStand.setCustomNameVisible(true);
+
+        // 3. Lever Stand on right side
+        leverStand = (ArmorStand) world.spawnEntity(center.clone().add(0.65, 0.0, 0), EntityType.ARMOR_STAND);
         leverStand.setVisible(false);
         leverStand.setGravity(false);
         leverStand.setMarker(true);
         leverStand.getEquipment().setItemInMainHand(new ItemStack(Material.LEVER));
-        leverStand.setRightArmPose(new EulerAngle(Math.toRadians(-20), 0, 0));
+        leverStand.setRightArmPose(new EulerAngle(Math.toRadians(-25), 0, 0));
 
-        // 3. Three Reel Stands (-0.45, 0, +0.45 X-offset)
+        // 4. Three Reel Stands (-0.45, 0, +0.45 X-offset)
         for (int i = 0; i < 3; i++) {
             Location reelLoc = center.clone().add((i - 1) * 0.45, -0.4, 0);
             ArmorStand reel = (ArmorStand) world.spawnEntity(reelLoc, EntityType.ARMOR_STAND);
@@ -87,11 +98,18 @@ public class Slots3DStructure {
                 }
 
                 tick += 0.05;
+
+                // Update jackpot live counter every 20 ticks
+                if ((int) (tick * 20) % 20 == 0 && jackpotHoloStand != null && jackpotHoloStand.isValid()) {
+                    double pot = plugin.getJackpotManager().getJackpotAmount();
+                    jackpotHoloStand.setCustomName("§6✦ POZO JACKPOT: §a$" + String.format("%.2f", pot) + " §6✦");
+                }
+
                 // Subtle shine effect on reels
                 for (int i = 0; i < reelStands.size(); i++) {
                     ArmorStand r = reelStands.get(i);
                     if (r != null && r.isValid()) {
-                        double yaw = Math.sin(tick + (i * 1.5)) * 15;
+                        double yaw = Math.sin(tick + (i * 1.5)) * 12;
                         r.setHeadPose(new EulerAngle(0, Math.toRadians(yaw), 0));
                     }
                 }
@@ -127,7 +145,7 @@ public class Slots3DStructure {
             leverStand.setRightArmPose(new EulerAngle(Math.toRadians(60), 0, 0));
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
                 if (leverStand != null && leverStand.isValid()) {
-                    leverStand.setRightArmPose(new EulerAngle(Math.toRadians(-20), 0, 0));
+                    leverStand.setRightArmPose(new EulerAngle(Math.toRadians(-25), 0, 0));
                 }
             }, 10L);
         }
@@ -226,12 +244,19 @@ public class Slots3DStructure {
 
         if (s1 == s2 && s2 == s3) {
             // Triple match
-            double mult = (s1 == Material.NETHER_STAR) ? 50.0 : ((s1 == Material.DIAMOND) ? 25.0 : 12.0);
+            double mult = 10.0;
+            if (s1 == Material.NETHER_STAR) mult = 50.0;
+            else if (s1 == Material.DIAMOND) mult = 25.0;
+            else if (s1 == Material.EMERALD) mult = 15.0;
+            else if (s1 == Material.AMETHYST_SHARD) mult = 8.0;
+            else if (s1 == Material.REDSTONE) mult = 5.0;
+
             double prize = bet * mult;
             plugin.getEconomyManager().deposit(player, prize);
 
             world.playSound(center, Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f);
             world.playSound(center, Sound.ENTITY_FIREWORK_ROCKET_BLAST, 1f, 1.2f);
+            world.playSound(center, Sound.BLOCK_CHAIN_FALL, 1f, 1.4f);
             world.spawnParticle(Particle.TOTEM, center.clone().add(0, 1.2, 0), 60, 0.6, 0.6, 0.6, 0.2);
 
             Bukkit.broadcastMessage("§6🎰💥 §l¡JACKPOT EN TRAGAMONEDAS 3D! §e" + player.getName() +
@@ -248,6 +273,7 @@ public class Slots3DStructure {
             plugin.getEconomyManager().deposit(player, prize);
 
             world.playSound(center, Sound.ENTITY_PLAYER_LEVELUP, 0.9f, 1.4f);
+            world.playSound(center, Sound.BLOCK_AMETHYST_BLOCK_CHIME, 1f, 1.2f);
             world.spawnParticle(Particle.VILLAGER_HAPPY, center.clone().add(0, 0.8, 0), 20, 0.4, 0.4, 0.4, 0.05);
 
             player.sendTitle("§a✨ ¡DOBLE COINCIDENCIA! ✨", "§a+" + plugin.getEconomyManager().format(prize), 5, 45, 10);
@@ -283,6 +309,7 @@ public class Slots3DStructure {
     public void remove() {
         if (idleTask != null) idleTask.cancel();
         if (holoStand != null && holoStand.isValid()) holoStand.remove();
+        if (jackpotHoloStand != null && jackpotHoloStand.isValid()) jackpotHoloStand.remove();
         if (leverStand != null && leverStand.isValid()) leverStand.remove();
         for (ArmorStand r : reelStands) {
             if (r != null && r.isValid()) r.remove();

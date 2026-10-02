@@ -104,9 +104,9 @@ public class DiceStructure {
 
         new BukkitRunnable() {
             int tick = 0;
-            final int maxTicks = 35;
+            final int maxTicks = 32;
             double currentY = baseLoc.getY();
-            double yVelocity = 0.12;
+            double yVelocity = 0.13;
 
             @Override
             public void run() {
@@ -120,11 +120,11 @@ public class DiceStructure {
 
                 // Physics simulation: parabolic arc + bounce
                 currentY += yVelocity;
-                yVelocity -= 0.008; // gravity
+                yVelocity -= 0.009; // gravity
 
                 if (currentY < baseLoc.getY()) {
                     currentY = baseLoc.getY();
-                    yVelocity = -yVelocity * 0.55; // bounce decay
+                    yVelocity = -yVelocity * 0.50; // bounce decay
                     world.playSound(center, Sound.BLOCK_STONE_STEP, 0.9f, 1.3f + (tick * 0.02f));
                     world.spawnParticle(Particle.CRIT, center.clone().add(0, 0.4, 0), 8, 0.2, 0.1, 0.2, 0.05);
                 }
@@ -163,20 +163,12 @@ public class DiceStructure {
                     Material chosenMat = diceMats[Math.min(targetResult - 1, diceMats.length - 1)];
                     diceStand.getEquipment().setHelmet(new ItemStack(chosenMat));
 
-                    // Sound & Sparkle explosion
-                    world.playSound(center, Sound.BLOCK_ANVIL_LAND, 0.4f, 1.8f);
-                    world.playSound(center, Sound.ENTITY_PLAYER_LEVELUP, 0.8f, 1.4f);
-                    world.spawnParticle(Particle.VILLAGER_HAPPY, center.clone().add(0, 0.8, 0), 20, 0.4, 0.4, 0.4, 0.1);
-
                     String unicodeDice = getDiceUnicode(targetResult);
                     if (holoStand != null && holoStand.isValid()) {
                         holoStand.setCustomName("§a§l🎲 RESULTADO: §e§l" + targetResult + " §f(" + unicodeDice + ")");
                     }
 
-                    if (player != null) {
-                        player.sendTitle("§e§l" + unicodeDice + " §6§lDADO: " + targetResult, "§7¡Resultado oficial de la mesa!", 5, 40, 10);
-                    }
-
+                    // Execute callback (finalizeGame in Dice.java)
                     if (callback != null) {
                         callback.run();
                     }

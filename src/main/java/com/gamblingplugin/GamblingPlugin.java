@@ -140,6 +140,7 @@ public class GamblingPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(this.updateManager, this);
         getServer().getPluginManager().registerEvents(new com.gamblingplugin.gui.StructureManagerGUI(this), this);
         getServer().getPluginManager().registerEvents(new com.gamblingplugin.gui.StructureSpawnSelectorGUI(this), this);
+        getServer().getPluginManager().registerEvents(new com.gamblingplugin.gui.SlotsBettingGUI(this), this);
 
         getLogger().info("GamblingPlugin has been enabled!");
     }

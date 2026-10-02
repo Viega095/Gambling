@@ -55,16 +55,12 @@ public class Dice extends Game {
         }
 
         plugin.getEconomyManager().withdraw(player, bet);
-
-        // Contribute to jackpot
         plugin.getJackpotManager().contributeBet(bet);
-
-        // Set cooldown
         plugin.getCooldownManager().setCooldown(player, "dice");
 
         // Show bet info
         player.sendMessage("");
-        player.sendMessage("§6§l[VieGambling] Dados");
+        player.sendMessage("§6§l[VieGambling] Dados 3D");
         String betDesc = "";
         if (betType.equals("SPECIFIC")) {
             betDesc = "Número " + specificNumber + " (6x)";
@@ -79,21 +75,26 @@ public class Dice extends Game {
 
         int result = random.nextInt(6) + 1;
 
-        // Find and animate nearest dice structure with full 3D physics
+        // Check if near a 3D physical dice table
         DiceStructure diceStruct = plugin.getStructureManager().getDiceStructure(player.getLocation());
         if (diceStruct != null) {
-            diceStruct.roll3D(player, result, null);
+            // Master 3D table roll (Single authoritative animation)
+            diceStruct.roll3D(player, result, () -> {
+                finalizeGame(player, bet, betType, specificNumber, result);
+            });
+        } else {
+            // Standalone virtual toss fallback
+            new DiceAnimation(plugin).play(player, specificNumber, (v) -> {
+                finalizeGame(player, bet, betType, specificNumber, result);
+            });
         }
-
-        new DiceAnimation(plugin).play(player, specificNumber, (v) -> {
-            finalizeGame(player, bet, betType, specificNumber, result);
-        });
     }
 
     private void finalizeGame(Player player, double bet, String betType, int specificNumber, int result) {
+        String unicodeDice = getDiceUnicode(result);
+
         player.sendMessage("");
-        player.sendMessage("§6§l[VieGambling] §7Resultado:");
-        player.sendMessage("§e  Dado: " + result);
+        player.sendMessage("§6§l[VieGambling] §7Resultado: §e" + unicodeDice + " " + result);
         player.sendMessage("");
 
         boolean won = false;
@@ -118,28 +119,21 @@ public class Dice extends Game {
             player.sendMessage("§7Premio: §a$" + String.format("%.2f", payout) + " §7(" + multiplier + "x)");
             player.sendMessage("");
 
-            // Visual effects
-            com.gamblingplugin.effects.ParticleEffects.playWinEffect(player, payout);
-            com.gamblingplugin.effects.ParticleEffects.playDiceEffect(player.getLocation());
-            com.gamblingplugin.effects.DisplayManager.showWinTitle(player, payout);
-            com.gamblingplugin.effects.DisplayManager.showDiceResult(player, result);
+            // Single unified Title & Fanfare
+            player.sendTitle("§a§l¡GANASTE! " + unicodeDice, "§e+" + plugin.getEconomyManager().format(payout) + " §7(Dado: " + result + ")", 5, 50, 15);
 
-            // Win celebration
             Location loc = player.getLocation();
-            player.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, loc.add(0, 2, 0), 30, 0.5, 0.5, 0.5, 0.1);
-            player.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, loc, 20, 0.5, 0.5, 0.5, 0);
+            player.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, loc.add(0, 1.5, 0), 35, 0.5, 0.5, 0.5, 0.1);
+            player.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, loc, 25, 0.5, 0.5, 0.5, 0);
             player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f);
-            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.7f, 1.3f);
+            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.8f, 1.4f);
         } else {
             player.sendMessage("§c§l[VieGambling] Perdiste");
             player.sendMessage("§7Mejor suerte la próxima vez");
             player.sendMessage("");
 
-            // Visual effects
-            com.gamblingplugin.effects.ParticleEffects.playLossEffect(player);
-            com.gamblingplugin.effects.DisplayManager.showLossTitle(player);
-            com.gamblingplugin.effects.DisplayManager.showDiceResult(player, result);
-
+            // Single unified Loss Title & Sound
+            player.sendTitle("§c§lPERDISTE", "§7Dado cayó en §e" + unicodeDice + " " + result + " §7| Suerte la próxima", 5, 40, 10);
             player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 0.4f, 1f);
         }
 
@@ -149,5 +143,17 @@ public class Dice extends Game {
             player.sendMessage("§6§l¡BONUS! §7¡También ganaste el §6§lJACKPOT§7!");
             player.sendMessage("");
         }
+    }
+
+    private String getDiceUnicode(int result) {
+        return switch (result) {
+            case 1 -> "⚀";
+            case 2 -> "⚁";
+            case 3 -> "⚂";
+            case 4 -> "⚃";
+            case 5 -> "⚄";
+            case 6 -> "⚅";
+            default -> "🎲";
+        };
     }
 }

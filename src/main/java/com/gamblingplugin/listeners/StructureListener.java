@@ -76,7 +76,7 @@ public class StructureListener implements Listener {
         if (slot != null) {
             event.setCancelled(true);
             if (!slot.isSpinning()) {
-                plugin.getBettingGUI().open(player, "slots");
+                new com.gamblingplugin.gui.SlotsBettingGUI(plugin).open(player);
             }
             return;
         }

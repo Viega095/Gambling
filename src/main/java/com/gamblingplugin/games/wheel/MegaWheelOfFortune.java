@@ -39,29 +39,33 @@ public class MegaWheelOfFortune implements Listener {
     }
 
     public void openWheelGUI(Player player) {
-        Inventory inv = Bukkit.createInventory(new WheelHolder(), 45, "§8🎡 §6Mega Ruleta de la Fortuna §8🎡");
+        Inventory inv = Bukkit.createInventory(new WheelHolder(), 54, "§8🎡 §6Mega Rueda de la Fortuna 3D §8🎡");
 
-        for (int i = 0; i < 45; i++) {
+        // Background panes
+        for (int i = 0; i < 54; i++) {
             inv.setItem(i, createPane(Material.YELLOW_STAINED_GLASS_PANE));
         }
 
-        // Circular sector displays (Slots 10, 11, 12, 14, 15, 16, 20, 24, 28, 29, 30, 32, 33, 34)
-        int[] wheelSlots = { 10, 11, 12, 14, 15, 16, 20, 24, 28, 29, 30, 32, 33, 34 };
-        Material[] colors = { Material.EMERALD, Material.GOLD_INGOT, Material.DIAMOND, Material.NETHER_STAR, Material.AMETHYST_SHARD, Material.LAPIS_LAZULI, Material.REDSTONE };
-        String[] multipliers = { "§aMultiplicador x2", "§eMultiplicador x5", "§bMultiplicador x10", "§d⭐ MEGA PREMIO x50 ⭐", "§5🔮 PREMIO MÍSTICO x20", "§eMultiplicador x3", "§6⚡ Multiplicador x1.5" };
+        // 16 Circular sector displays around the perimeter (slots 10-16, 25, 34-28, 19)
+        int[] perimeterSlots = { 10, 11, 12, 13, 14, 15, 16, 25, 34, 33, 32, 31, 30, 29, 28, 19 };
+        WheelStructure.WheelSector[] sectors = WheelStructure.SECTORS;
 
-        for (int i = 0; i < wheelSlots.length; i++) {
-            inv.setItem(wheelSlots[i], createBtn(colors[i % colors.length], multipliers[i % multipliers.length], Arrays.asList("§7Sector de la Mega Ruleta")));
+        for (int i = 0; i < perimeterSlots.length; i++) {
+            WheelStructure.WheelSector sec = sectors[i % sectors.length];
+            inv.setItem(perimeterSlots[i], createBtn(sec.material, sec.name, Arrays.asList(
+                    "§7Multiplicador: §a" + sec.multiplier + "x",
+                    sec.isJackpot ? "§d⭐ ¡BOTE MAYOR DEL CASINO!" : "§ePremio oficial de la Rueda 3D"
+            )));
         }
 
-        // Guide book in slot 36 (bottom left)
-        inv.setItem(36, TutorialBookUtils.getWheelGuide());
+        // Guide book in slot 45 (bottom left)
+        inv.setItem(45, TutorialBookUtils.getWheelGuide());
 
-        // Center Spin Button (Slot 22)
+        // Center Spin Button (Slot 22 / 31)
         boolean hasFree = canUseFreeSpin(player);
         String costText = hasFree ? "§a¡GIRO GRATIS DISPONIBLE!" : "§eCosto por Giro: §6$500";
-        inv.setItem(22, createBtn(Material.COMPASS, "§6⚡ §lGIRAR LA RULETA",
-                Arrays.asList("§7Haz girar la rueda de la fortuna", "§7para ganar multiplicadores y botes.", "", costText, "", "§6▶ Haz clic para girar")));
+        inv.setItem(22, createBtn(Material.COMPASS, "§6⚡ §lGIRAR LA MEGA RUEDA",
+                Arrays.asList("§7Haz girar la gran rueda vertical 3D", "§7con 16 premios y multiplicadores.", "", costText, "", "§6▶ Haz clic para girar")));
 
         player.openInventory(inv);
         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 0.8f, 1.2f);
@@ -97,42 +101,32 @@ public class MegaWheelOfFortune implements Listener {
             return;
         }
 
-        // Standalone virtual wheel spin
+        // Standalone virtual wheel spin fallback
         new BukkitRunnable() {
             int ticks = 0;
-            int maxTicks = 30;
+            final int maxTicks = 35;
 
             @Override
             public void run() {
                 ticks++;
-                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HAT, 0.7f, 1.0f + (ticks * 0.04f));
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HAT, 0.7f, 1.0f + (ticks * 0.03f));
 
                 if (ticks >= maxTicks) {
                     cancel();
-                    // Award outcome
-                    double roll = ThreadLocalRandom.current().nextDouble();
-                    if (roll < 0.05) { // 5% Mega Jackpot x50
-                        double prize = 25000.0;
-                        plugin.getEconomyManager().deposit(player, prize);
+                    // Award outcome from 16 sectors
+                    WheelStructure.WheelSector won = WheelStructure.SECTORS[ThreadLocalRandom.current().nextInt(WheelStructure.SECTORS.length)];
+                    double prize = 500.0 * won.multiplier;
+                    plugin.getEconomyManager().deposit(player, prize);
+
+                    if (won.isJackpot) {
                         player.sendTitle("§d⭐ ¡MEGA PREMIO x50! ⭐", "§a+" + plugin.getEconomyManager().format(prize), 10, 70, 20);
                         player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f);
                         Bukkit.broadcastMessage(ChatColor.GOLD + "🎡 ¡" + player.getName() + " ha ganado el ⭐ MEGA PREMIO x50 ⭐ en la Ruleta de la Fortuna!");
-                    } else if (roll < 0.20) { // 15% x10
-                        double prize = 5000.0;
-                        plugin.getEconomyManager().deposit(player, prize);
-                        player.sendTitle("§b✨ ¡MULTIPLICADOR x10! ✨", "§a+" + plugin.getEconomyManager().format(prize), 10, 50, 15);
+                    } else {
+                        player.sendTitle(won.name, "§a+" + plugin.getEconomyManager().format(prize), 10, 50, 15);
                         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1.4f);
-                    } else if (roll < 0.50) { // 30% x3
-                        double prize = 1500.0;
-                        plugin.getEconomyManager().deposit(player, prize);
-                        player.sendTitle("§e✨ ¡MULTIPLICADOR x3! ✨", "§a+" + plugin.getEconomyManager().format(prize), 10, 50, 15);
-                        player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1.2f);
-                    } else { // x1.5
-                        double prize = 750.0;
-                        plugin.getEconomyManager().deposit(player, prize);
-                        player.sendTitle("§a✨ ¡PREMIO x1.5! ✨", "§a+" + plugin.getEconomyManager().format(prize), 10, 40, 10);
-                        player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1f, 1.2f);
                     }
+                    player.sendMessage("§6🎡 [Mega Rueda] §7¡Has obtenido §e" + won.name + "§7! Premio: §a" + plugin.getEconomyManager().format(prize));
                 }
             }
         }.runTaskTimer(plugin, 0L, 2L);
