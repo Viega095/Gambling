@@ -16,7 +16,6 @@ public class DiceStructure {
     private final GamblingPlugin plugin;
     private final Location center;
     private ArmorStand diceStand;
-    private ArmorStand diceStand2;
     private ArmorStand holoStand;
     private BukkitRunnable idleTask;
     private boolean isRolling = false;
@@ -38,20 +37,12 @@ public class DiceStructure {
         holoStand.setCustomNameVisible(true);
         holoStand.setMarker(true);
 
-        // 2. Primary Dice Stand
+        // 2. Primary White Dice Stand
         diceStand = (ArmorStand) world.spawnEntity(center.clone().add(0, -0.6, 0), EntityType.ARMOR_STAND);
         diceStand.setVisible(false);
         diceStand.setGravity(false);
         diceStand.setMarker(true);
         diceStand.getEquipment().setHelmet(new ItemStack(Material.WHITE_CONCRETE));
-
-        // 3. Secondary Decorative Dice Stand
-        diceStand2 = (ArmorStand) world.spawnEntity(center.clone().add(0.4, -0.7, 0.3), EntityType.ARMOR_STAND);
-        diceStand2.setVisible(false);
-        diceStand2.setGravity(false);
-        diceStand2.setMarker(true);
-        diceStand2.getEquipment().setHelmet(new ItemStack(Material.RED_CONCRETE));
-        diceStand2.setHeadPose(new EulerAngle(Math.toRadians(25), Math.toRadians(45), Math.toRadians(15)));
 
         startIdleAnimation();
     }
@@ -202,7 +193,6 @@ public class DiceStructure {
             idleTask.cancel();
         }
         if (diceStand != null && diceStand.isValid()) diceStand.remove();
-        if (diceStand2 != null && diceStand2.isValid()) diceStand2.remove();
         if (holoStand != null && holoStand.isValid()) holoStand.remove();
     }
 
