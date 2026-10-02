@@ -228,9 +228,22 @@ public class WheelStructure {
                     world.spawnParticle(Particle.FIREWORKS_SPARK, topLoc, 50, 1.2, 1.2, 1.2, 0.15);
                     world.spawnParticle(Particle.VILLAGER_HAPPY, topLoc, 35, 0.8, 0.8, 0.8, 0.05);
 
-                    if (won.isJackpot) {
+                    if (won.isJackpot || won.multiplier >= 15.0) {
                         Bukkit.broadcastMessage("§6🎡💥 §l¡" + player.getName() + " §eha ganado el " + won.name + " §6en la Mega Rueda del Casino!");
                         world.spawnParticle(Particle.TOTEM, topLoc, 100, 1.2, 1.2, 1.2, 0.25);
+                        try {
+                            org.bukkit.entity.Firework fw = world.spawn(topLoc.clone().add(0, 1.0, 0), org.bukkit.entity.Firework.class);
+                            org.bukkit.inventory.meta.FireworkMeta fm = fw.getFireworkMeta();
+                            fm.addEffect(FireworkEffect.builder()
+                                    .with(FireworkEffect.Type.BALL_LARGE)
+                                    .withColor(Color.YELLOW, Color.AQUA, Color.PURPLE)
+                                    .withFade(Color.WHITE)
+                                    .withTrail()
+                                    .withFlicker()
+                                    .build());
+                            fm.setPower(1);
+                            fw.setFireworkMeta(fm);
+                        } catch (Exception ignored) {}
                     }
 
                     player.sendTitle(won.name, "§a+" + plugin.getEconomyManager().format(prize), 10, 60, 15);

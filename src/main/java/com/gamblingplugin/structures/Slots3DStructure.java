@@ -259,6 +259,20 @@ public class Slots3DStructure {
             world.playSound(center, Sound.BLOCK_CHAIN_FALL, 1f, 1.4f);
             world.spawnParticle(Particle.TOTEM, center.clone().add(0, 1.2, 0), 60, 0.6, 0.6, 0.6, 0.2);
 
+            try {
+                org.bukkit.entity.Firework fw = world.spawn(center.clone().add(0, 2.5, 0), org.bukkit.entity.Firework.class);
+                org.bukkit.inventory.meta.FireworkMeta fm = fw.getFireworkMeta();
+                fm.addEffect(FireworkEffect.builder()
+                        .with(FireworkEffect.Type.BALL_LARGE)
+                        .withColor(Color.YELLOW, Color.ORANGE, Color.FUCHSIA)
+                        .withFade(Color.WHITE)
+                        .withTrail()
+                        .withFlicker()
+                        .build());
+                fm.setPower(1);
+                fw.setFireworkMeta(fm);
+            } catch (Exception ignored) {}
+
             Bukkit.broadcastMessage("§6🎰💥 §l¡JACKPOT EN TRAGAMONEDAS 3D! §e" + player.getName() +
                     " §7sacó 3x §e" + s1.name() + " §7y ganó §a" + plugin.getEconomyManager().format(prize) + "!");
 
