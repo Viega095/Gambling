@@ -3,6 +3,7 @@ package com.gamblingplugin.games.wheel;
 import com.gamblingplugin.GamblingPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -59,6 +60,16 @@ public class MegaWheelOfFortune implements Listener {
 
         player.openInventory(inv);
         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 0.8f, 1.2f);
+    }
+
+    public void spawnInteractiveStand(Location loc) {
+        if (loc.getWorld() == null) return;
+        org.bukkit.entity.ArmorStand stand = (org.bukkit.entity.ArmorStand) loc.getWorld().spawnEntity(loc, org.bukkit.entity.EntityType.ARMOR_STAND);
+        stand.setVisible(false);
+        stand.setGravity(false);
+        stand.setCustomName("§6🎡 §e§lMEGA RUEDA DE LA FORTUNA §7(Clic Derecho)");
+        stand.setCustomNameVisible(true);
+        stand.setHelmet(new ItemStack(Material.SUNFLOWER));
     }
 
     public boolean canUseFreeSpin(Player player) {

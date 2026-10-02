@@ -144,6 +144,10 @@ public class CasinoTestLabGUI implements Listener {
         inv.setItem(35, createBtn(Material.NETHERITE_INGOT, "§e📉 Futuros Binarios (30s)",
                 Arrays.asList("§7Opera contratos rápidos de subida/bajada", "§7con gráficos de velas en tiempo real.", "", "§e▶ Haz clic para operar")));
 
+        // Slot 47: Generar Casino Resort 3D Completo
+        inv.setItem(47, createBtn(Material.BEACON, "§6🏛️ Generar Casino Resort 3D (Plaza)",
+                Arrays.asList("§7Construye una plataforma de cuarzo liso", "§7con todos los 14 juegos y mesas 3D.", "", "§6▶ Haz clic para generar")));
+
         // Slot 48: Auto-Update Check
         inv.setItem(48, createBtn(Material.EXPERIENCE_BOTTLE, "§a🔄 Probar Auto-Update en GitHub",
                 Arrays.asList("§7Verifica nuevas versiones y releases en", "§7GitHub sin salir del juego.", "", "§a▶ Haz clic para verificar")));
@@ -197,7 +201,9 @@ public class CasinoTestLabGUI implements Listener {
 
             case 11: // Crash 3D
                 player.closeInventory();
-                player.performCommand("gamble crash3d 100");
+                if (plugin.getCrashBettingAndCashoutGUI() != null) {
+                    plugin.getCrashBettingAndCashoutGUI().openBettingGUI(player);
+                }
                 break;
 
             case 12: // Race
@@ -316,6 +322,13 @@ public class CasinoTestLabGUI implements Listener {
                 player.closeInventory();
                 if (plugin.getBinaryFuturesMarket() != null) {
                     plugin.getBinaryFuturesMarket().openFuturesGUI(player);
+                }
+                break;
+
+            case 47: // Casino Resort Plaza
+                player.closeInventory();
+                if (plugin.getStructureManager() != null) {
+                    plugin.getStructureManager().generateCasinoPlaza(player);
                 }
                 break;
 

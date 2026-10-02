@@ -1,19 +1,16 @@
 package com.gamblingplugin.manager;
 
 import com.gamblingplugin.GamblingPlugin;
-import com.gamblingplugin.structures.CoinflipStructure;
-import com.gamblingplugin.structures.DiceStructure;
-import com.gamblingplugin.structures.RouletteWheel;
-import org.bukkit.Location;
+import com.gamblingplugin.structures.*;
+import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class StructureManager {
 
@@ -21,14 +18,14 @@ public class StructureManager {
     private final Map<String, RouletteWheel> rouletteWheels = new HashMap<>(); // ID -> Wheel
     private final Map<Location, DiceStructure> diceStructures = new HashMap<>();
     private final Map<Location, CoinflipStructure> coinflipStructures = new HashMap<>();
-    private final Map<Location, com.gamblingplugin.structures.MinesStructure> minesStructures = new HashMap<>();
-    private final Map<Location, com.gamblingplugin.structures.CaseStructure> caseStructures = new HashMap<>();
-    private final Map<Location, com.gamblingplugin.structures.PlinkoStructure> plinkoStructures = new HashMap<>();
-    private final Map<Location, com.gamblingplugin.structures.BlackjackStructure> blackjackStructures = new HashMap<>();
-    private final Map<Location, com.gamblingplugin.structures.CrashStructure> crashStructures = new HashMap<>();
-    private final Map<Location, com.gamblingplugin.structures.BaccaratStructure> baccaratStructures = new HashMap<>();
-    private final Map<Location, com.gamblingplugin.structures.LotteryStructure> lotteryStructures = new HashMap<>();
-    private final Map<Location, com.gamblingplugin.structures.VIPLoungeStructure> vipLoungeStructures = new HashMap<>();
+    private final Map<Location, MinesStructure> minesStructures = new HashMap<>();
+    private final Map<Location, CaseStructure> caseStructures = new HashMap<>();
+    private final Map<Location, PlinkoStructure> plinkoStructures = new HashMap<>();
+    private final Map<Location, BlackjackStructure> blackjackStructures = new HashMap<>();
+    private final Map<Location, CrashStructure> crashStructures = new HashMap<>();
+    private final Map<Location, BaccaratStructure> baccaratStructures = new HashMap<>();
+    private final Map<Location, LotteryStructure> lotteryStructures = new HashMap<>();
+    private final Map<Location, VIPLoungeStructure> vipLoungeStructures = new HashMap<>();
     private File structuresFile;
     private FileConfiguration structuresConfig;
     private int nextRouletteId = 1;
@@ -43,6 +40,7 @@ public class StructureManager {
         structuresFile = new File(plugin.getDataFolder(), "structures.yml");
         if (!structuresFile.exists()) {
             try {
+                structuresFile.getParentFile().mkdirs();
                 structuresFile.createNewFile();
             } catch (IOException e) {
                 plugin.getLogger().severe("Could not create structures.yml!");
@@ -51,53 +49,25 @@ public class StructureManager {
         structuresConfig = YamlConfiguration.loadConfiguration(structuresFile);
     }
 
-    private void saveStructures() {
-        // Clear existing roulette data to rewrite
+    public synchronized void saveStructures() {
+        // Roulettes
         structuresConfig.set("roulettes", null);
-        // Save roulette wheels with IDs
         for (Map.Entry<String, RouletteWheel> entry : rouletteWheels.entrySet()) {
-            String id = entry.getKey();
-            Location loc = entry.getValue().getCenter();
-            structuresConfig.set("roulettes." + id, locationToString(loc));
+            structuresConfig.set("roulettes." + entry.getKey(), locationToString(entry.getValue().getCenter()));
         }
-
-        // Save next ID
         structuresConfig.set("next-roulette-id", nextRouletteId);
 
-        // Save dice structures
-        List<String> diceLocations = new ArrayList<>();
-        for (Location loc : diceStructures.keySet()) {
-            diceLocations.add(locationToString(loc));
-        }
-        structuresConfig.set("dice", diceLocations);
-
-        // Save coinflips
-        List<String> coinflipLocations = new ArrayList<>();
-        for (Location loc : coinflipStructures.keySet()) {
-            coinflipLocations.add(locationToString(loc));
-        }
-        structuresConfig.set("coinflips", coinflipLocations);
-
-        // Save mines
-        List<String> minesLocations = new ArrayList<>();
-        for (Location loc : minesStructures.keySet()) {
-            minesLocations.add(locationToString(loc));
-        }
-        structuresConfig.set("mines", minesLocations);
-
-        // Save cases
-        List<String> caseLocations = new ArrayList<>();
-        for (Location loc : caseStructures.keySet()) {
-            caseLocations.add(locationToString(loc));
-        }
-        structuresConfig.set("cases", caseLocations);
-
-        // Save plinko
-        List<String> plinkoLocations = new ArrayList<>();
-        for (Location loc : plinkoStructures.keySet()) {
-            plinkoLocations.add(locationToString(loc));
-        }
-        structuresConfig.set("plinko", plinkoLocations);
+        // Simple List locations
+        saveLocationList("dice", diceStructures.keySet());
+        saveLocationList("coinflips", coinflipStructures.keySet());
+        saveLocationList("mines", minesStructures.keySet());
+        saveLocationList("cases", caseStructures.keySet());
+        saveLocationList("plinko", plinkoStructures.keySet());
+        saveLocationList("blackjack", blackjackStructures.keySet());
+        saveLocationList("crash", crashStructures.keySet());
+        saveLocationList("baccarat", baccaratStructures.keySet());
+        saveLocationList("lottery", lotteryStructures.keySet());
+        saveLocationList("vipLounge", vipLoungeStructures.keySet());
 
         try {
             structuresConfig.save(structuresFile);
@@ -106,358 +76,234 @@ public class StructureManager {
         }
     }
 
-    private void loadStructures() {
-        // Load next ID
+    private void saveLocationList(String key, Set<Location> locations) {
+        List<String> list = new ArrayList<>();
+        for (Location loc : locations) {
+            if (loc != null && loc.getWorld() != null) {
+                list.add(locationToString(loc));
+            }
+        }
+        structuresConfig.set(key, list);
+    }
+
+    public synchronized void loadStructures() {
         nextRouletteId = structuresConfig.getInt("next-roulette-id", 1);
 
-        // Load roulette wheels
+        // Load Roulettes
         if (structuresConfig.getConfigurationSection("roulettes") != null) {
             for (String id : structuresConfig.getConfigurationSection("roulettes").getKeys(false)) {
-                String locStr = structuresConfig.getString("roulettes." + id);
-                Location loc = stringToLocation(locStr);
+                Location loc = stringToLocation(structuresConfig.getString("roulettes." + id));
                 if (loc != null) {
                     RouletteWheel wheel = new RouletteWheel(plugin, loc, id);
                     wheel.spawn();
                     rouletteWheels.put(id, wheel);
-                    // Update next ID if necessary
-                    try {
-                        int idNum = Integer.parseInt(id.replace("Ruleta-", ""));
-                        if (idNum >= nextRouletteId) {
-                            nextRouletteId = idNum + 1;
-                        }
-                    } catch (NumberFormatException ignored) {
-                    }
                 }
             }
         }
 
-        // Load dice structures
-        List<String> diceLocations = structuresConfig.getStringList("dice");
-        for (String locStr : diceLocations) {
-            Location loc = stringToLocation(locStr);
+        // Load Dice
+        for (String s : structuresConfig.getStringList("dice")) {
+            Location loc = stringToLocation(s);
             if (loc != null) {
-                DiceStructure dice = new DiceStructure(plugin, loc);
-                dice.spawn();
-                diceStructures.put(loc, dice);
+                DiceStructure d = new DiceStructure(plugin, loc);
+                d.spawn();
+                diceStructures.put(loc, d);
             }
         }
 
-        // Load coinflips
-        List<String> coinflipLocations = structuresConfig.getStringList("coinflips");
-        for (String locStr : coinflipLocations) {
-            Location loc = stringToLocation(locStr);
+        // Load Coinflip
+        for (String s : structuresConfig.getStringList("coinflips")) {
+            Location loc = stringToLocation(s);
             if (loc != null) {
-                CoinflipStructure coinflip = new CoinflipStructure(plugin, loc);
-                coinflip.spawn();
-                coinflipStructures.put(loc, coinflip);
+                CoinflipStructure c = new CoinflipStructure(plugin, loc);
+                c.spawn();
+                coinflipStructures.put(loc, c);
             }
         }
 
-        // Load mines
-        List<String> minesLocations = structuresConfig.getStringList("mines");
-        for (String locStr : minesLocations) {
-            Location loc = stringToLocation(locStr);
+        // Load Mines
+        for (String s : structuresConfig.getStringList("mines")) {
+            Location loc = stringToLocation(s);
             if (loc != null) {
-                com.gamblingplugin.structures.MinesStructure mines = new com.gamblingplugin.structures.MinesStructure(
-                        plugin, loc);
-                mines.spawn();
-                minesStructures.put(loc, mines);
+                MinesStructure m = new MinesStructure(plugin, loc);
+                m.spawn();
+                minesStructures.put(loc, m);
             }
         }
 
-        // Load cases
-        List<String> caseLocations = structuresConfig.getStringList("cases");
-        for (String locStr : caseLocations) {
-            Location loc = stringToLocation(locStr);
+        // Load Cases
+        for (String s : structuresConfig.getStringList("cases")) {
+            Location loc = stringToLocation(s);
             if (loc != null) {
-                com.gamblingplugin.structures.CaseStructure caseStructure = new com.gamblingplugin.structures.CaseStructure(
-                        plugin, loc);
-                caseStructure.spawn();
-                caseStructures.put(loc, caseStructure);
+                CaseStructure cs = new CaseStructure(plugin, loc);
+                cs.spawn();
+                caseStructures.put(loc, cs);
             }
         }
 
-        // Load plinko
-        List<String> plinkoLocations = structuresConfig.getStringList("plinko");
-        for (String locStr : plinkoLocations) {
-            Location loc = stringToLocation(locStr);
+        // Load Plinko
+        for (String s : structuresConfig.getStringList("plinko")) {
+            Location loc = stringToLocation(s);
             if (loc != null) {
-                com.gamblingplugin.structures.PlinkoStructure plinkoStructure = new com.gamblingplugin.structures.PlinkoStructure(
-                        plugin, loc);
-                plinkoStructure.spawn();
-                plinkoStructures.put(loc, plinkoStructure);
+                PlinkoStructure p = new PlinkoStructure(plugin, loc);
+                p.spawn();
+                plinkoStructures.put(loc, p);
             }
         }
 
-        if (!rouletteWheels.isEmpty() || !diceStructures.isEmpty() || !coinflipStructures.isEmpty()
-                || !minesStructures.isEmpty() || !caseStructures.isEmpty() || !plinkoStructures.isEmpty()) {
-            plugin.getLogger().info("Restored " + rouletteWheels.size() + " roulettes, " + diceStructures.size()
-                    + " dice, " + coinflipStructures.size() + " coinflips, " + minesStructures.size() + " mines, "
-                    + caseStructures.size() + " cases, and " + plinkoStructures.size() + " plinko");
+        // Load Blackjack
+        for (String s : structuresConfig.getStringList("blackjack")) {
+            Location loc = stringToLocation(s);
+            if (loc != null) {
+                BlackjackStructure b = new BlackjackStructure(plugin, loc);
+                b.spawn();
+                blackjackStructures.put(loc, b);
+            }
         }
+
+        // Load Crash
+        for (String s : structuresConfig.getStringList("crash")) {
+            Location loc = stringToLocation(s);
+            if (loc != null) {
+                CrashStructure cr = new CrashStructure(plugin, loc);
+                cr.spawn();
+                crashStructures.put(loc, cr);
+            }
+        }
+
+        // Load Baccarat
+        for (String s : structuresConfig.getStringList("baccarat")) {
+            Location loc = stringToLocation(s);
+            if (loc != null) {
+                BaccaratStructure bac = new BaccaratStructure(plugin, loc);
+                bac.spawn();
+                baccaratStructures.put(loc, bac);
+            }
+        }
+
+        // Load Lottery
+        for (String s : structuresConfig.getStringList("lottery")) {
+            Location loc = stringToLocation(s);
+            if (loc != null) {
+                LotteryStructure lot = new LotteryStructure(plugin, loc);
+                lot.spawn();
+                lotteryStructures.put(loc, lot);
+            }
+        }
+
+        // Load VIP Lounge
+        for (String s : structuresConfig.getStringList("vipLounge")) {
+            Location loc = stringToLocation(s);
+            if (loc != null) {
+                VIPLoungeStructure vip = new VIPLoungeStructure(plugin, loc);
+                vip.spawn();
+                vipLoungeStructures.put(loc, vip);
+            }
+        }
+
+        plugin.getLogger().info("Casino Structures loaded & restored successfully.");
     }
 
     private String locationToString(Location loc) {
+        if (loc == null || loc.getWorld() == null) return "";
         return loc.getWorld().getName() + "," + loc.getX() + "," + loc.getY() + "," + loc.getZ();
     }
 
     private Location stringToLocation(String str) {
+        if (str == null || str.trim().isEmpty()) return null;
         try {
             String[] parts = str.split(",");
-            return new Location(
-                    plugin.getServer().getWorld(parts[0]),
-                    Double.parseDouble(parts[1]),
-                    Double.parseDouble(parts[2]),
-                    Double.parseDouble(parts[3]));
+            World w = Bukkit.getWorld(parts[0]);
+            if (w == null) return null;
+            return new Location(w, Double.parseDouble(parts[1]), Double.parseDouble(parts[2]), Double.parseDouble(parts[3]));
         } catch (Exception e) {
-            plugin.getLogger().warning("Invalid location string: " + str);
             return null;
         }
     }
 
+    // ================= Spawn Methods =================
     public void spawnRouletteWheel(Location location) {
         String id = "Ruleta-" + nextRouletteId++;
         RouletteWheel wheel = new RouletteWheel(plugin, location, id);
         wheel.spawn();
         rouletteWheels.put(id, wheel);
-        saveStructures(); // Auto-save when spawned
+        saveStructures();
     }
 
     public void spawnDiceStructure(Location location) {
         DiceStructure dice = new DiceStructure(plugin, location);
         dice.spawn();
         diceStructures.put(location, dice);
-        saveStructures(); // Auto-save when spawned
+        saveStructures();
     }
 
     public void spawnCoinflipStructure(Location location) {
         CoinflipStructure coinflip = new CoinflipStructure(plugin, location);
         coinflip.spawn();
         coinflipStructures.put(location, coinflip);
-        saveStructures(); // Auto-save when spawned
+        saveStructures();
     }
 
-    public void removeRouletteWheel(String id) {
-        if (rouletteWheels.containsKey(id)) {
-            rouletteWheels.get(id).remove();
-            rouletteWheels.remove(id);
-            saveStructures(); // Auto-save when removed
-        }
-    }
-
-    public void removeNearestRouletteWheel(Location location) {
-        RouletteWheel nearest = getNearestRouletteWheel(location);
-        if (nearest != null) {
-            String id = nearest.getId();
-            removeRouletteWheel(id);
-        }
-    }
-
-    public void removeDiceStructure(Location location) {
-        if (diceStructures.containsKey(location)) {
-            diceStructures.get(location).remove();
-            diceStructures.remove(location);
-            saveStructures(); // Auto-save when removed
-        }
-    }
-
-    public void removeNearestDiceStructure(Location playerLocation) {
-        DiceStructure nearest = getDiceStructure(playerLocation);
-        if (nearest != null) {
-            // Find the location key for this dice structure
-            Location toRemove = null;
-            for (java.util.Map.Entry<Location, DiceStructure> entry : diceStructures.entrySet()) {
-                if (entry.getValue() == nearest) {
-                    toRemove = entry.getKey();
-                    break;
-                }
-            }
-            if (toRemove != null) {
-                diceStructures.get(toRemove).remove();
-                diceStructures.remove(toRemove);
-                saveStructures();
-            }
-        }
-    }
-
-    public void removeCoinflipStructure(Location location) {
-        if (coinflipStructures.containsKey(location)) {
-            coinflipStructures.get(location).remove();
-            coinflipStructures.remove(location);
-            saveStructures();
-        }
-    }
-
-    public void removeCoinflipAt(Location location) {
-        CoinflipStructure structure = coinflipStructures.remove(location);
-        if (structure != null) {
-            structure.remove();
-            saveStructures();
-        }
-    }
-
-    // === Mines Structure Methods ===
     public void spawnMinesStructure(Location location) {
-        com.gamblingplugin.structures.MinesStructure mines = new com.gamblingplugin.structures.MinesStructure(plugin,
-                location);
+        MinesStructure mines = new MinesStructure(plugin, location);
         mines.spawn();
         minesStructures.put(location, mines);
         saveStructures();
     }
 
-    public com.gamblingplugin.structures.MinesStructure getMinesStructure(Location playerLocation) {
-        for (Map.Entry<Location, com.gamblingplugin.structures.MinesStructure> entry : minesStructures.entrySet()) {
-            if (entry.getKey().distance(playerLocation) <= 4) {
-                return entry.getValue();
-            }
-        }
-        return null;
-    }
-
-    public Map<Location, com.gamblingplugin.structures.MinesStructure> getAllMines() {
-        return minesStructures;
-    }
-
-    // ========== Case Opening Methods ==========
-
     public void spawnCaseStructure(Location location) {
-        com.gamblingplugin.structures.CaseStructure caseStructure = new com.gamblingplugin.structures.CaseStructure(
-                plugin, location);
+        CaseStructure caseStructure = new CaseStructure(plugin, location);
         caseStructure.spawn();
         caseStructures.put(location, caseStructure);
         saveStructures();
     }
 
-    public com.gamblingplugin.structures.CaseStructure getCaseStructure(Location playerLocation) {
-        for (Map.Entry<Location, com.gamblingplugin.structures.CaseStructure> entry : caseStructures.entrySet()) {
-            if (entry.getKey().distance(playerLocation) <= 4) {
-                return entry.getValue();
-            }
-        }
-        return null;
-    }
-
-    public Map<Location, com.gamblingplugin.structures.CaseStructure> getAllCases() {
-        return caseStructures;
-    }
-
-    public void removeCaseAt(Location location) {
-        com.gamblingplugin.structures.CaseStructure structure = caseStructures.remove(location);
-        if (structure != null) {
-            structure.remove();
-            saveStructures();
-        }
-    }
-
-    // ========== Plinko Methods ==========
-
     public void spawnPlinkoStructure(Location location) {
-        com.gamblingplugin.structures.PlinkoStructure plinkoStructure = new com.gamblingplugin.structures.PlinkoStructure(
-                plugin, location);
-        plinkoStructure.spawn();
-        plinkoStructures.put(location, plinkoStructure);
+        PlinkoStructure plinko = new PlinkoStructure(plugin, location);
+        plinko.spawn();
+        plinkoStructures.put(location, plinko);
         saveStructures();
     }
 
-    public com.gamblingplugin.structures.PlinkoStructure getPlinkoStructure(Location playerLocation) {
-        for (Map.Entry<Location, com.gamblingplugin.structures.PlinkoStructure> entry : plinkoStructures.entrySet()) {
-            if (entry.getValue().isNearby(playerLocation)) {
-                return entry.getValue();
-            }
-        }
-        return null;
-    }
-
-    public Map<Location, com.gamblingplugin.structures.PlinkoStructure> getAllPlinko() {
-        return plinkoStructures;
-    }
-
-    // Blackjack structure methods
     public void spawnBlackjackStructure(Location location) {
-        com.gamblingplugin.structures.BlackjackStructure structure = new com.gamblingplugin.structures.BlackjackStructure(
-                plugin, location);
+        BlackjackStructure structure = new BlackjackStructure(plugin, location);
         structure.spawn();
         blackjackStructures.put(location, structure);
         saveStructures();
     }
 
-    public com.gamblingplugin.structures.BlackjackStructure getBlackjackStructure(Location location) {
-        for (Map.Entry<Location, com.gamblingplugin.structures.BlackjackStructure> entry : blackjackStructures
-                .entrySet()) {
-            if (entry.getValue().isNearby(location)) {
-                return entry.getValue();
-            }
-        }
-        return null;
-    }
-
-    public void removeBlackjackStructure(Location location) {
-        com.gamblingplugin.structures.BlackjackStructure structure = getBlackjackStructure(location);
-        if (structure != null) {
-            structure.remove();
-            blackjackStructures.remove(structure.getCenter());
-            saveStructures();
-        }
-    }
-
-    public Map<Location, com.gamblingplugin.structures.BlackjackStructure> getAllBlackjack() {
-        return blackjackStructures;
-    }
-
-    public void removePlinkoAt(Location location) {
-        com.gamblingplugin.structures.PlinkoStructure structure = plinkoStructures.remove(location);
-        if (structure != null) {
-            structure.remove();
-            saveStructures();
-        }
-    }
-
-    public void removeMinesAt(Location location) {
-        com.gamblingplugin.structures.MinesStructure structure = minesStructures.remove(location);
-        if (structure != null) {
-            structure.remove();
-            saveStructures();
-        }
-    }
-
-    public void removeNearestCoinflipStructure(Location playerLocation) {
-        CoinflipStructure nearest = getNearestCoinflipStructure(playerLocation);
-        if (nearest != null) {
-            Location toRemove = null;
-            for (java.util.Map.Entry<Location, CoinflipStructure> entry : coinflipStructures.entrySet()) {
-                if (entry.getValue() == nearest) {
-                    toRemove = entry.getKey();
-                    break;
-                }
-            }
-            if (toRemove != null) {
-                coinflipStructures.get(toRemove).remove();
-                coinflipStructures.remove(toRemove);
-                saveStructures();
-            }
-        }
-    }
-
-    public void removeAll() {
-        for (RouletteWheel wheel : rouletteWheels.values()) {
-            wheel.remove();
-        }
-        for (DiceStructure dice : diceStructures.values()) {
-            dice.remove();
-        }
-        rouletteWheels.clear();
-        diceStructures.clear();
+    public void spawnCrashStructure(Location loc) {
+        CrashStructure crash = new CrashStructure(plugin, loc);
+        crash.spawn();
+        crashStructures.put(loc, crash);
         saveStructures();
     }
 
-    public RouletteWheel getRouletteWheelById(String id) {
-        return rouletteWheels.get(id);
+    public void spawnBaccaratStructure(Location loc) {
+        BaccaratStructure baccarat = new BaccaratStructure(plugin, loc);
+        baccarat.spawn();
+        baccaratStructures.put(loc, baccarat);
+        saveStructures();
     }
 
+    public void spawnLotteryStructure(Location loc) {
+        LotteryStructure lottery = new LotteryStructure(plugin, loc);
+        lottery.spawn();
+        lotteryStructures.put(loc, lottery);
+        saveStructures();
+    }
+
+    public void spawnVIPLoungeStructure(Location loc) {
+        VIPLoungeStructure lounge = new VIPLoungeStructure(plugin, loc);
+        lounge.spawn();
+        vipLoungeStructures.put(loc, lounge);
+        saveStructures();
+    }
+
+    // ================= Query / Get Methods =================
     public RouletteWheel getRouletteWheel(Location location) {
-        // This method now searches for a wheel by its center location
         for (RouletteWheel wheel : rouletteWheels.values()) {
-            if (wheel.getCenter().equals(location)) {
+            if (wheel.getCenter().getWorld().equals(location.getWorld()) && wheel.getCenter().distance(location) <= 3.5) {
                 return wheel;
             }
         }
@@ -467,128 +313,312 @@ public class StructureManager {
     public RouletteWheel getNearestRouletteWheel(Location playerLocation) {
         RouletteWheel nearest = null;
         double nearestDistance = Double.MAX_VALUE;
-
         for (RouletteWheel wheel : rouletteWheels.values()) {
-            Location wheelLoc = wheel.getCenter();
-            if (wheelLoc.getWorld() != playerLocation.getWorld()) {
-                continue;
-            }
-
-            double distance = wheelLoc.distance(playerLocation);
-            if (distance < nearestDistance && distance < 20) { // Within 20 blocks
-                nearestDistance = distance;
-                nearest = wheel;
+            if (wheel.getCenter().getWorld().equals(playerLocation.getWorld())) {
+                double distance = wheel.getCenter().distance(playerLocation);
+                if (distance < nearestDistance && distance < 25) {
+                    nearestDistance = distance;
+                    nearest = wheel;
+                }
             }
         }
-
         return nearest;
-    }
-
-    public Map<String, RouletteWheel> getAllRoulettes() {
-        return new HashMap<>(rouletteWheels);
-    }
-
-    public Map<Location, DiceStructure> getAllDice() {
-        return new HashMap<>(diceStructures);
-    }
-
-    public Map<Location, CoinflipStructure> getAllCoinflips() {
-        return new HashMap<>(coinflipStructures);
     }
 
     public DiceStructure getDiceStructure(Location location) {
-        return getNearestDiceStructure(location);
+        for (DiceStructure dice : diceStructures.values()) {
+            if (dice.isNearby(location)) return dice;
+        }
+        return null;
     }
 
     public CoinflipStructure getCoinflipStructure(Location location) {
-        return getNearestCoinflipStructure(location);
-    }
-
-    public DiceStructure getNearestDiceStructure(Location playerLocation) {
-        DiceStructure nearest = null;
-        double minDistanceSq = 25.0;
-
-        for (Map.Entry<Location, DiceStructure> entry : diceStructures.entrySet()) {
-            if (entry.getKey().getWorld() != playerLocation.getWorld())
-                continue;
-
-            double distSq = entry.getKey().distanceSquared(playerLocation);
-            if (distSq < minDistanceSq) {
-                minDistanceSq = distSq;
-                nearest = entry.getValue();
-            }
+        for (CoinflipStructure coinflip : coinflipStructures.values()) {
+            if (coinflip.isNearby(location)) return coinflip;
         }
-
-        return nearest;
+        return null;
     }
 
-    public CoinflipStructure getNearestCoinflipStructure(Location playerLocation) {
-        CoinflipStructure nearest = null;
-        double minDistanceSq = 25.0;
-
-        for (Map.Entry<Location, CoinflipStructure> entry : coinflipStructures.entrySet()) {
-            if (entry.getKey().getWorld() != playerLocation.getWorld())
-                continue;
-
-            double distSq = entry.getKey().distanceSquared(playerLocation);
-            if (distSq < minDistanceSq) {
-                minDistanceSq = distSq;
-                nearest = entry.getValue();
-            }
+    public MinesStructure getMinesStructure(Location location) {
+        for (MinesStructure mines : minesStructures.values()) {
+            if (mines.isNearby(location)) return mines;
         }
-
-        return nearest;
+        return null;
     }
 
-    public void spawnCrashStructure(Location loc) {
-        com.gamblingplugin.structures.CrashStructure crash = new com.gamblingplugin.structures.CrashStructure(plugin, loc);
-        crash.spawn();
-        crashStructures.put(loc, crash);
+    public CaseStructure getCaseStructure(Location location) {
+        for (CaseStructure cs : caseStructures.values()) {
+            if (cs.isNearby(location)) return cs;
+        }
+        return null;
     }
 
-    public void spawnBaccaratStructure(Location loc) {
-        com.gamblingplugin.structures.BaccaratStructure baccarat = new com.gamblingplugin.structures.BaccaratStructure(plugin, loc);
-        baccarat.spawn();
-        baccaratStructures.put(loc, baccarat);
+    public PlinkoStructure getPlinkoStructure(Location location) {
+        for (PlinkoStructure plinko : plinkoStructures.values()) {
+            if (plinko.isNearby(location)) return plinko;
+        }
+        return null;
     }
 
-    public void spawnLotteryStructure(Location loc) {
-        com.gamblingplugin.structures.LotteryStructure lottery = new com.gamblingplugin.structures.LotteryStructure(plugin, loc);
-        lottery.spawn();
-        lotteryStructures.put(loc, lottery);
+    public BlackjackStructure getBlackjackStructure(Location location) {
+        for (BlackjackStructure bj : blackjackStructures.values()) {
+            if (bj.isNearby(location)) return bj;
+        }
+        return null;
     }
 
-    public void spawnVIPLoungeStructure(Location loc) {
-        com.gamblingplugin.structures.VIPLoungeStructure lounge = new com.gamblingplugin.structures.VIPLoungeStructure(plugin, loc);
-        lounge.spawn();
-        vipLoungeStructures.put(loc, lounge);
-    }
-
-    public com.gamblingplugin.structures.CrashStructure getCrashStructure(Location loc) {
-        for (com.gamblingplugin.structures.CrashStructure c : crashStructures.values()) {
+    public CrashStructure getCrashStructure(Location loc) {
+        for (CrashStructure c : crashStructures.values()) {
             if (c.isNearby(loc)) return c;
         }
         return null;
     }
 
-    public com.gamblingplugin.structures.BaccaratStructure getBaccaratStructure(Location loc) {
-        for (com.gamblingplugin.structures.BaccaratStructure b : baccaratStructures.values()) {
+    public CrashStructure getNearestCrashStructure(Location loc) {
+        CrashStructure nearest = null;
+        double min = Double.MAX_VALUE;
+        for (CrashStructure c : crashStructures.values()) {
+            if (c.getCenter().getWorld().equals(loc.getWorld())) {
+                double d = c.getCenter().distance(loc);
+                if (d < min) {
+                    min = d;
+                    nearest = c;
+                }
+            }
+        }
+        return nearest;
+    }
+
+    public BaccaratStructure getBaccaratStructure(Location loc) {
+        for (BaccaratStructure b : baccaratStructures.values()) {
             if (b.isNearby(loc)) return b;
         }
         return null;
     }
 
-    public com.gamblingplugin.structures.LotteryStructure getLotteryStructure(Location loc) {
-        for (com.gamblingplugin.structures.LotteryStructure l : lotteryStructures.values()) {
+    public LotteryStructure getLotteryStructure(Location loc) {
+        for (LotteryStructure l : lotteryStructures.values()) {
             if (l.isNearby(loc)) return l;
         }
         return null;
     }
 
-    public com.gamblingplugin.structures.VIPLoungeStructure getVIPLoungeStructure(Location loc) {
-        for (com.gamblingplugin.structures.VIPLoungeStructure v : vipLoungeStructures.values()) {
+    public VIPLoungeStructure getVIPLoungeStructure(Location loc) {
+        for (VIPLoungeStructure v : vipLoungeStructures.values()) {
             if (v.isNearby(loc)) return v;
         }
         return null;
     }
+
+    // ================= Cleanup & Removal =================
+    public RouletteWheel getRouletteWheelById(String id) {
+        return rouletteWheels.get(id);
+    }
+
+    public void removeRouletteWheel(String id) {
+        RouletteWheel w = rouletteWheels.remove(id);
+        if (w != null) {
+            w.remove();
+            saveStructures();
+        }
+    }
+
+    public void removeNearestRouletteWheel(Location playerLocation) {
+        RouletteWheel nearest = getNearestRouletteWheel(playerLocation);
+        if (nearest != null) {
+            removeRouletteWheel(nearest.getId());
+        }
+    }
+
+    public void removeNearestDiceStructure(Location playerLocation) {
+        DiceStructure nearest = getDiceStructure(playerLocation);
+        if (nearest != null) {
+            Location toRemove = null;
+            for (Map.Entry<Location, DiceStructure> entry : diceStructures.entrySet()) {
+                if (entry.getValue() == nearest) {
+                    toRemove = entry.getKey();
+                    break;
+                }
+            }
+            if (toRemove != null) {
+                diceStructures.remove(toRemove).remove();
+                saveStructures();
+            }
+        }
+    }
+
+    public void removeNearestCoinflipStructure(Location playerLocation) {
+        CoinflipStructure nearest = getCoinflipStructure(playerLocation);
+        if (nearest != null) {
+            Location toRemove = null;
+            for (Map.Entry<Location, CoinflipStructure> entry : coinflipStructures.entrySet()) {
+                if (entry.getValue() == nearest) {
+                    toRemove = entry.getKey();
+                    break;
+                }
+            }
+            if (toRemove != null) {
+                coinflipStructures.remove(toRemove).remove();
+                saveStructures();
+            }
+        }
+    }
+
+    public void removeBlackjackStructure(Location playerLocation) {
+        BlackjackStructure nearest = getBlackjackStructure(playerLocation);
+        if (nearest != null) {
+            Location toRemove = null;
+            for (Map.Entry<Location, BlackjackStructure> entry : blackjackStructures.entrySet()) {
+                if (entry.getValue() == nearest) {
+                    toRemove = entry.getKey();
+                    break;
+                }
+            }
+            if (toRemove != null) {
+                blackjackStructures.remove(toRemove).remove();
+                saveStructures();
+            }
+        }
+    }
+
+    public void removeAll() {
+        for (RouletteWheel wheel : rouletteWheels.values()) wheel.remove();
+        for (DiceStructure dice : diceStructures.values()) dice.remove();
+        for (CoinflipStructure cf : coinflipStructures.values()) cf.remove();
+        for (MinesStructure m : minesStructures.values()) m.remove();
+        for (CaseStructure c : caseStructures.values()) c.remove();
+        for (PlinkoStructure p : plinkoStructures.values()) p.remove();
+        for (BlackjackStructure b : blackjackStructures.values()) b.remove();
+        for (CrashStructure cr : crashStructures.values()) cr.remove();
+        for (BaccaratStructure ba : baccaratStructures.values()) ba.remove();
+        for (LotteryStructure l : lotteryStructures.values()) l.remove();
+        for (VIPLoungeStructure v : vipLoungeStructures.values()) v.remove();
+
+        rouletteWheels.clear();
+        diceStructures.clear();
+        coinflipStructures.clear();
+        minesStructures.clear();
+        caseStructures.clear();
+        plinkoStructures.clear();
+        blackjackStructures.clear();
+        crashStructures.clear();
+        baccaratStructures.clear();
+        lotteryStructures.clear();
+        vipLoungeStructures.clear();
+
+        saveStructures();
+    }
+
+    // ================= 🏛️ CASINO RESORT PLAZA GENERATOR 🏛️ =================
+    public void generateCasinoPlaza(Player player) {
+        Location center = player.getLocation().getBlock().getLocation();
+        World world = center.getWorld();
+        if (world == null) return;
+
+        removeAll(); // Clear previous structures cleanly
+
+        int radius = 18;
+        int y = center.getBlockY();
+
+        // 1. Generate Platform & Floor
+        for (int x = -radius; x <= radius; x++) {
+            for (int z = -radius; z <= radius; z++) {
+                Block floorBlock = world.getBlockAt(center.getBlockX() + x, y - 1, center.getBlockZ() + z);
+                Block airBlock1 = world.getBlockAt(center.getBlockX() + x, y, center.getBlockZ() + z);
+                Block airBlock2 = world.getBlockAt(center.getBlockX() + x, y + 1, center.getBlockZ() + z);
+                Block airBlock3 = world.getBlockAt(center.getBlockX() + x, y + 2, center.getBlockZ() + z);
+
+                // Clear upper air
+                airBlock1.setType(Material.AIR);
+                airBlock2.setType(Material.AIR);
+                airBlock3.setType(Material.AIR);
+
+                int distMax = Math.max(Math.abs(x), Math.abs(z));
+
+                if (distMax == radius) {
+                    // Outer border with polished blackstone & sea lanterns
+                    if (Math.abs(x) == radius && Math.abs(z) == radius) {
+                        floorBlock.setType(Material.SEA_LANTERN);
+                    } else if (distMax % 4 == 0) {
+                        floorBlock.setType(Material.SEA_LANTERN);
+                    } else {
+                        floorBlock.setType(Material.POLISHED_BLACKSTONE);
+                    }
+                } else if (Math.abs(x) <= 2 || Math.abs(z) <= 2) {
+                    // Central Red Carpet Walkways
+                    floorBlock.setType(Material.RED_CARPET.isBlock() ? Material.RED_WOOL : Material.RED_CONCRETE);
+                } else if ((Math.abs(x) + Math.abs(z)) % 2 == 0) {
+                    floorBlock.setType(Material.SMOOTH_QUARTZ);
+                } else {
+                    floorBlock.setType(Material.QUARTZ_BRICKS);
+                }
+            }
+        }
+
+        // 2. Spawn All Interactive Game Structures across the Pavilion
+        // Center (0, 0): Crash 3D Rocket Launchpad
+        Location crashLoc = center.clone().add(0, 0, 0);
+        spawnCrashStructure(crashLoc);
+
+        // North quadrant (Z negative): Mega Wheel of Fortune & Roulette
+        Location wheelLoc = center.clone().add(0, 0, -10);
+        plugin.getMegaWheelOfFortune().spawnInteractiveStand(wheelLoc);
+        Location rouletteLoc = center.clone().add(6, 0, -10);
+        spawnRouletteWheel(rouletteLoc);
+
+        // East quadrant (X positive): Blackjack & Texas Hold'em Poker & VIP Lounge
+        Location bjLoc = center.clone().add(10, 0, 0);
+        spawnBlackjackStructure(bjLoc);
+        Location pokerLoc = center.clone().add(10, 0, -6);
+        spawnBaccaratStructure(pokerLoc);
+        Location vipLoc = center.clone().add(10, 0, 6);
+        spawnVIPLoungeStructure(vipLoc);
+
+        // South quadrant (Z positive): 3D Dice Table, Coinflip Arena, Mines Field
+        Location diceLoc = center.clone().add(0, 0, 10);
+        spawnDiceStructure(diceLoc);
+        Location coinflipLoc = center.clone().add(-6, 0, 10);
+        spawnCoinflipStructure(coinflipLoc);
+        Location minesLoc = center.clone().add(6, 0, 10);
+        spawnMinesStructure(minesLoc);
+
+        // West quadrant (X negative): Plinko Machine, Case Opening, Futures Board, Lottery Booth
+        Location plinkoLoc = center.clone().add(-10, 0, 0);
+        spawnPlinkoStructure(plinkoLoc);
+        Location caseLoc = center.clone().add(-10, 0, -6);
+        spawnCaseStructure(caseLoc);
+        Location lotteryLoc = center.clone().add(-10, 0, 6);
+        spawnLotteryStructure(lotteryLoc);
+
+        saveStructures();
+
+        // Teleport player near the entrance walkway looking at center
+        Location entrance = center.clone().add(0, 0, 14);
+        entrance.setPitch(0f);
+        entrance.setYaw(180f);
+        player.teleport(entrance);
+
+        player.sendTitle("§6👑 ¡CASINO RESORT 3D CREADO!", "§eTodos los juegos interactivos han sido generados", 10, 70, 20);
+        player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f);
+        world.spawnParticle(Particle.FIREWORKS_SPARK, entrance.clone().add(0, 2, 0), 50, 1.5, 1.5, 1.5, 0.1);
+
+        player.sendMessage("§6═════════════════════════════════════════════════════");
+        player.sendMessage("§e🏛️ ¡PLAZA Y RESORT DEL CASINO 3D GENERADO EXITOSAMENTE!");
+        player.sendMessage("§7Se ha construido una plataforma de cuarzo liso con todos los juegos:");
+        player.sendMessage("§a• 🚀 Centro: §fCohete Crash 3D Gigante con Despegue");
+        player.sendMessage("§a• 🎡 Norte: §fMega Rueda de la Fortuna & Ruleta Francesa");
+        player.sendMessage("§a• 🃏 Este: §fMesa de Blackjack, Baccarat & VIP Lounge");
+        player.sendMessage("§a• 🎲 Sur: §fMesa de Dados 3D, Coinflip & Campo de Minas");
+        player.sendMessage("§a• 🎯 Oeste: §fMáquina de Plinko, Apertura de Cajas & Lotería");
+        player.sendMessage("§e▶ ¡Simplemente camina hacia cualquier mesa y haz clic derecho!");
+        player.sendMessage("§6═════════════════════════════════════════════════════");
+    }
+
+    public Map<String, RouletteWheel> getAllRoulettes() { return rouletteWheels; }
+    public Map<Location, DiceStructure> getAllDice() { return diceStructures; }
+    public Map<Location, CoinflipStructure> getAllCoinflips() { return coinflipStructures; }
+    public Map<Location, MinesStructure> getAllMines() { return minesStructures; }
+    public Map<Location, CaseStructure> getAllCases() { return caseStructures; }
+    public Map<Location, PlinkoStructure> getAllPlinko() { return plinkoStructures; }
+    public Map<Location, BlackjackStructure> getAllBlackjack() { return blackjackStructures; }
 }

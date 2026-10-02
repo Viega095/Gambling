@@ -73,6 +73,14 @@ public class GambleCommand implements CommandExecutor {
                 plugin.getCasinoTestLabGUI().open(player);
                 return true;
             }
+            if (args[0].equalsIgnoreCase("resort") || args[0].equalsIgnoreCase("plaza") || args[0].equalsIgnoreCase("spawnall") || args[0].equalsIgnoreCase("layout")) {
+                if (!player.hasPermission("gambling.admin")) {
+                    player.sendMessage(plugin.getConfigManager().getMessage("no-permission"));
+                    return true;
+                }
+                plugin.getStructureManager().generateCasinoPlaza(player);
+                return true;
+            }
             if (args[0].equalsIgnoreCase("vault") || args[0].equalsIgnoreCase("card") || args[0].equalsIgnoreCase("loyalty")) {
                 plugin.getCasinoVaultAndLoyalty().openVaultGUI(player);
                 return true;
