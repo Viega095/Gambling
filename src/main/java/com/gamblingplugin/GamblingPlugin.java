@@ -130,6 +130,8 @@ public class GamblingPlugin extends JavaPlugin {
         this.updateManager = new com.gamblingplugin.updater.GamblingUpdateManager(this);
         this.updateManager.startAsyncCheck();
 
+        this.scratchCardGUI = new com.gamblingplugin.gui.ScratchCardGUI(this);
+
         getServer().getPluginManager().registerEvents(this.baccaratTable, this);
         getServer().getPluginManager().registerEvents(this.casinoVIPLounge, this);
         getServer().getPluginManager().registerEvents(this.crashBettingAndCashoutGUI, this);
@@ -141,6 +143,7 @@ public class GamblingPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new com.gamblingplugin.gui.StructureManagerGUI(this), this);
         getServer().getPluginManager().registerEvents(new com.gamblingplugin.gui.StructureSpawnSelectorGUI(this), this);
         getServer().getPluginManager().registerEvents(new com.gamblingplugin.gui.SlotsBettingGUI(this), this);
+        getServer().getPluginManager().registerEvents(this.scratchCardGUI, this);
 
         getLogger().info("GamblingPlugin has been enabled!");
     }
@@ -322,5 +325,11 @@ public class GamblingPlugin extends JavaPlugin {
 
     public com.gamblingplugin.games.futures.BinaryFuturesMarket getBinaryFuturesMarket() {
         return binaryFuturesMarket;
+    }
+
+    private com.gamblingplugin.gui.ScratchCardGUI scratchCardGUI;
+
+    public com.gamblingplugin.gui.ScratchCardGUI getScratchCardGUI() {
+        return scratchCardGUI;
     }
 }

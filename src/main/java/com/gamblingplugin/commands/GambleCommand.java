@@ -144,6 +144,18 @@ public class GambleCommand implements CommandExecutor {
                 plugin.getDailySpinManager().spinWheel(player);
                 return true;
             }
+            if (args[0].equalsIgnoreCase("scratch") || args[0].equalsIgnoreCase("raspe")) {
+                if (plugin.getScratchCardGUI() != null) {
+                    plugin.getScratchCardGUI().openNewCard(player, 100.0);
+                }
+                return true;
+            }
+            if (args[0].equalsIgnoreCase("poker") || args[0].equalsIgnoreCase("holdem")) {
+                if (plugin.getMultiplayerPokerEngine() != null) {
+                    plugin.getMultiplayerPokerEngine().openPokerTableGUI(player);
+                }
+                return true;
+            }
             if (args[0].equalsIgnoreCase("plinko3d")) {
                 com.gamblingplugin.games.PlinkoPhysicalMachine machine = new com.gamblingplugin.games.PlinkoPhysicalMachine(plugin, player.getLocation());
                 machine.dropBall(player, 100.0, 1);
