@@ -126,6 +126,19 @@ public class StructureManagerGUI implements Listener {
         List<StructureEntry> list = new ArrayList<>();
         StructureManager sm = plugin.getStructureManager();
 
+        // 0. Active Casino Multiblocks (Craftable Deployable Tables)
+        if (plugin.getCasinoMultiblockManager() != null) {
+            for (com.gamblingplugin.multiblock.ActiveCasinoMultiblock acm : plugin.getCasinoMultiblockManager().getActiveMultiblocks().values()) {
+                list.add(new StructureEntry(
+                        acm.getType().name(),
+                        acm.getType().getDisplayName(),
+                        acm.getType().getIconMaterial(),
+                        acm.getBaseLocation(),
+                        acm
+                ));
+            }
+        }
+
         // 1. Crash Rocket Launchpads
         for (CrashStructure c : sm.getAllCrash().values()) {
             list.add(new StructureEntry("Crash 3D Rocket", "§c🚀 Cohete Crash 3D", Material.REDSTONE_BLOCK, c.getCenter(), c));
@@ -229,7 +242,10 @@ public class StructureManagerGUI implements Listener {
             if (slot == 51) { // Eliminar Todo
                 player.closeInventory();
                 plugin.getStructureManager().removeAll();
-                player.sendMessage("§c🗑️ [VieGambling] Todas las estructuras han sido eliminadas.");
+                if (plugin.getCasinoMultiblockManager() != null) {
+                    plugin.getCasinoMultiblockManager().dismantleAllNearby(player.getLocation(), 100.0, player);
+                }
+                player.sendMessage("§c🗑️ [VieGambling] Todas las estructuras y mesas han sido eliminadas.");
                 player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1f, 1f);
                 return;
             }
@@ -255,14 +271,24 @@ public class StructureManagerGUI implements Listener {
 
                     if (event.isShiftClick()) {
                         // Respawn
-                        plugin.getStructureManager().removeStructureAt(entry.location);
-                        plugin.getStructureManager().spawnStructureByType(entry.type, entry.location);
+                        if (entry.structureObject instanceof com.gamblingplugin.multiblock.ActiveCasinoMultiblock acm) {
+                            com.gamblingplugin.multiblock.CasinoMultiblockType type = acm.getType();
+                            plugin.getCasinoMultiblockManager().dismantleAt(entry.location, null);
+                            plugin.getCasinoMultiblockManager().placeMultiblock(null, entry.location, type);
+                        } else {
+                            plugin.getStructureManager().removeStructureAt(entry.location);
+                            plugin.getStructureManager().spawnStructureByType(entry.type, entry.location);
+                        }
                         player.sendMessage("§e🔄 Estructura '" + entry.displayName + "' re-spawneada!");
                         openPage(player, page);
                         player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_USE, 0.7f, 1.4f);
                     } else if (event.isRightClick()) {
                         // Delete
-                        plugin.getStructureManager().removeStructureAt(entry.location);
+                        if (entry.structureObject instanceof com.gamblingplugin.multiblock.ActiveCasinoMultiblock) {
+                            plugin.getCasinoMultiblockManager().dismantleAt(entry.location, player);
+                        } else {
+                            plugin.getStructureManager().removeStructureAt(entry.location);
+                        }
                         player.sendMessage("§c🗑️ Estructura '" + entry.displayName + "' eliminada!");
                         openPage(player, page);
                         player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 0.8f, 1.2f);

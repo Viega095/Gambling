@@ -6,14 +6,26 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Arrays;
 
-public class CoinflipSpinGUI {
+public class CoinflipSpinGUI implements Listener {
+
+    public static class CoinflipSpinHolder implements InventoryHolder {
+        @Override
+        public Inventory getInventory() {
+            return null;
+        }
+    }
 
     private final GamblingPlugin plugin;
     private final String TITLE = "§6Coinflip - Girando...";
@@ -23,7 +35,7 @@ public class CoinflipSpinGUI {
     }
 
     public void open(Player player, Coinflip.Side chosenSide, Coinflip.Side result, double bet) {
-        Inventory inv = Bukkit.createInventory(null, 54, TITLE); // Large chest
+        Inventory inv = Bukkit.createInventory(new CoinflipSpinHolder(), 54, TITLE); // Large chest
 
         // Start spinning animation
         new SpinAnimation(player, inv, chosenSide, result, bet).runTaskTimer(plugin, 0L, 3L);
@@ -49,6 +61,11 @@ public class CoinflipSpinGUI {
 
         @Override
         public void run() {
+            if (!(player.getOpenInventory().getTopInventory().getHolder() instanceof CoinflipSpinHolder)) {
+                this.cancel();
+                return;
+            }
+
             // Animation duration: ~60 ticks (3 seconds at 3 tick interval = ~20 updates)
             if (ticks >= 20) {
                 this.cancel();
@@ -133,17 +150,20 @@ public class CoinflipSpinGUI {
             // Determine win/loss
             boolean won = (chosenSide == result);
 
-            // Play final sound
+            // Play final sound and celebratory effects
             if (won) {
                 player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f);
+                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1.6f);
+                player.getWorld().spawnParticle(org.bukkit.Particle.TOTEM, player.getLocation().add(0, 1.2, 0), 35, 0.4, 0.4, 0.4, 0.1);
+                player.getWorld().spawnParticle(org.bukkit.Particle.FIREWORKS_SPARK, player.getLocation().add(0, 1.5, 0), 25, 0.3, 0.3, 0.3, 0.05);
             } else {
                 player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 0.5f, 1f);
+                player.getWorld().spawnParticle(org.bukkit.Particle.SMOKE_LARGE, player.getLocation().add(0, 1.0, 0), 10, 0.2, 0.2, 0.2, 0.02);
             }
 
             // Close after showing result
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
                 player.closeInventory();
-                // Process result in Coinflip game
             }, 40L); // 2 seconds
         }
     }
@@ -196,5 +216,19 @@ public class CoinflipSpinGUI {
         meta.setDisplayName(" ");
         item.setItemMeta(meta);
         return item;
+    }
+
+    @EventHandler
+    public void onClick(InventoryClickEvent event) {
+        if (event.getView().getTopInventory().getHolder() instanceof CoinflipSpinHolder) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onDrag(InventoryDragEvent event) {
+        if (event.getView().getTopInventory().getHolder() instanceof CoinflipSpinHolder) {
+            event.setCancelled(true);
+        }
     }
 }

@@ -63,7 +63,18 @@ public class Roulette extends Game {
 
     private boolean isValidChoice(String choice) {
         if (choice.equals("red") || choice.equals("black") || choice.equals("green") ||
-                choice.equals("even") || choice.equals("odd") || choice.equals("low") || choice.equals("high"))
+                choice.equals("rojo") || choice.equals("negro") || choice.equals("verde") ||
+                choice.equals("even") || choice.equals("odd") || choice.equals("par") || choice.equals("impar") ||
+                choice.equals("low") || choice.equals("high") || choice.equals("bajo") || choice.equals("alto"))
+            return true;
+        // Dozens: 1st12, 2nd12, 3rd12, docena1, docena2, docena3
+        if (choice.equals("1st12") || choice.equals("2nd12") || choice.equals("3rd12") ||
+                choice.equals("docena1") || choice.equals("docena2") || choice.equals("docena3") ||
+                choice.equals("1-12") || choice.equals("13-24") || choice.equals("25-36"))
+            return true;
+        // Columns: col1, col2, col3, columna1, columna2, columna3
+        if (choice.equals("col1") || choice.equals("col2") || choice.equals("col3") ||
+                choice.equals("columna1") || choice.equals("columna2") || choice.equals("columna3"))
             return true;
         // Allow 00 as valid choice
         if (choice.equals("00"))
@@ -79,12 +90,12 @@ public class Roulette extends Game {
     private void startAnimation(Player player, double bet, String choice) {
         RouletteWheel wheel = plugin.getStructureManager().getNearestRouletteWheel(player.getLocation());
         if (wheel == null) {
-            player.sendMessage("§c[VieGambling] §7No hay ruleta cercana!");
+            player.sendMessage("§c[VieGambling] §7¡No hay ninguna mesa de ruleta 3D cercana!");
             return;
         }
 
         if (wheel.isSpinning()) {
-            player.sendMessage("§c[VieGambling] §7La ruleta está girando!");
+            player.sendMessage("§c[VieGambling] §7¡La ruleta está girando en este momento!");
             return;
         }
 
@@ -112,6 +123,21 @@ public class Roulette extends Game {
         boolean won = false;
         double payout = 0;
 
+        // Normalize choice
+        if (choice.equals("rojo")) choice = "red";
+        if (choice.equals("negro")) choice = "black";
+        if (choice.equals("verde")) choice = "green";
+        if (choice.equals("par")) choice = "even";
+        if (choice.equals("impar")) choice = "odd";
+        if (choice.equals("bajo") || choice.equals("1-18")) choice = "low";
+        if (choice.equals("alto") || choice.equals("19-36")) choice = "high";
+        if (choice.equals("docena1") || choice.equals("1-12")) choice = "1st12";
+        if (choice.equals("docena2") || choice.equals("13-24")) choice = "2nd12";
+        if (choice.equals("docena3") || choice.equals("25-36")) choice = "3rd12";
+        if (choice.equals("columna1")) choice = "col1";
+        if (choice.equals("columna2")) choice = "col2";
+        if (choice.equals("columna3")) choice = "col3";
+
         // Determine color code for message
         String colorCode = resultColor.equals("red") ? "§c" : (resultColor.equals("green") ? "§a" : "§8");
         String colorName = resultColor.equals("red") ? "ROJO" : (resultColor.equals("green") ? "VERDE" : "NEGRO");
@@ -120,7 +146,7 @@ public class Roulette extends Game {
         if (choice.equals("red") || choice.equals("black") || choice.equals("green")) {
             if (choice.equals(resultColor)) {
                 won = true;
-                payout = choice.equals("green") ? bet * 36 : bet * 2; // Green pays 36:1 for American, color pays 2:1
+                payout = choice.equals("green") ? bet * 36 : bet * 2;
             }
         } else if (choice.equals("even")) {
             if (resultNumber != 0 && resultNumber != -1 && resultNumber % 2 == 0) {
@@ -142,8 +168,37 @@ public class Roulette extends Game {
                 won = true;
                 payout = bet * 2;
             }
+        } else if (choice.equals("1st12")) {
+            if (resultNumber >= 1 && resultNumber <= 12) {
+                won = true;
+                payout = bet * 3; // 2:1 net payout
+            }
+        } else if (choice.equals("2nd12")) {
+            if (resultNumber >= 13 && resultNumber <= 24) {
+                won = true;
+                payout = bet * 3;
+            }
+        } else if (choice.equals("3rd12")) {
+            if (resultNumber >= 25 && resultNumber <= 36) {
+                won = true;
+                payout = bet * 3;
+            }
+        } else if (choice.equals("col1")) {
+            if (resultNumber >= 1 && resultNumber <= 36 && (resultNumber - 1) % 3 == 0) {
+                won = true;
+                payout = bet * 3;
+            }
+        } else if (choice.equals("col2")) {
+            if (resultNumber >= 1 && resultNumber <= 36 && (resultNumber - 2) % 3 == 0) {
+                won = true;
+                payout = bet * 3;
+            }
+        } else if (choice.equals("col3")) {
+            if (resultNumber >= 1 && resultNumber <= 36 && resultNumber % 3 == 0) {
+                won = true;
+                payout = bet * 3;
+            }
         } else if (choice.equals("00")) {
-            // Bet on 00 (represented as -1 internally)
             if (resultNumber == -1) {
                 won = true;
                 payout = bet * 36;
@@ -152,7 +207,7 @@ public class Roulette extends Game {
             int chosenNum = Integer.parseInt(choice);
             if (chosenNum == resultNumber) {
                 won = true;
-                payout = bet * 36; // Straight up bet pays 36:1 in American roulette
+                payout = bet * 36;
             }
         }
 

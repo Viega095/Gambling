@@ -68,33 +68,43 @@ public class Dice extends Game {
             betDesc = "Rango Bajo 1-3 (1.5x)";
         } else if (betType.equals("HIGH_RANGE")) {
             betDesc = "Rango Alto 4-6 (1.5x)";
+        } else if (betType.equals("CRAPS_PASS")) {
+            betDesc = "Pase Craps Doble (7 u 11) (2.0x)";
+        } else if (betType.equals("CRAPS_DOUBLES")) {
+            betDesc = "Dados Dobles Iguales (5.0x)";
         }
         player.sendMessage("§7Tu apuesta: §e" + betDesc);
         player.sendMessage("§7Monto: §a$" + String.format("%.2f", bet));
         player.sendMessage("");
 
         int result = random.nextInt(6) + 1;
+        int result2 = random.nextInt(6) + 1;
 
         // Check if near a 3D physical dice table
         DiceStructure diceStruct = plugin.getStructureManager().getDiceStructure(player.getLocation());
         if (diceStruct != null) {
             // Master 3D table roll (Single authoritative animation)
             diceStruct.roll3D(player, result, () -> {
-                finalizeGame(player, bet, betType, specificNumber, result);
+                finalizeGame(player, bet, betType, specificNumber, result, result2);
             });
         } else {
             // Standalone virtual toss fallback
             new DiceAnimation(plugin).play(player, specificNumber, (v) -> {
-                finalizeGame(player, bet, betType, specificNumber, result);
+                finalizeGame(player, bet, betType, specificNumber, result, result2);
             });
         }
     }
 
-    private void finalizeGame(Player player, double bet, String betType, int specificNumber, int result) {
+    private void finalizeGame(Player player, double bet, String betType, int specificNumber, int result, int result2) {
         String unicodeDice = getDiceUnicode(result);
+        String unicodeDice2 = getDiceUnicode(result2);
 
         player.sendMessage("");
-        player.sendMessage("§6§l[VieGambling] §7Resultado: §e" + unicodeDice + " " + result);
+        if (betType.startsWith("CRAPS")) {
+            player.sendMessage("§6§l[VieGambling] §7Dados Lanzados: §e" + unicodeDice + " (" + result + ") §7+ §e" + unicodeDice2 + " (" + result2 + ") §7= §6" + (result + result2));
+        } else {
+            player.sendMessage("§6§l[VieGambling] §7Resultado: §e" + unicodeDice + " " + result);
+        }
         player.sendMessage("");
 
         boolean won = false;
@@ -110,6 +120,13 @@ public class Dice extends Game {
         } else if (betType.equals("HIGH_RANGE")) {
             won = (result >= 4 && result <= 6);
             multiplier = 1.5;
+        } else if (betType.equals("CRAPS_PASS")) {
+            int sum = result + result2;
+            won = (sum == 7 || sum == 11);
+            multiplier = 2.0;
+        } else if (betType.equals("CRAPS_DOUBLES")) {
+            won = (result == result2);
+            multiplier = 5.0;
         }
 
         if (won) {

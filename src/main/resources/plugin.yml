@@ -3,13 +3,14 @@ version: '${project.version}'
 main: com.gamblingplugin.GamblingPlugin
 api-version: 1.20
 depend: [Vault]
-authors: [Antigravity]
+authors: [Viega095]
 description: A complete gambling plugin with multiple games and customizable structures.
 
 commands:
   gamble:
     description: Main command for the gambling plugin
     usage: /gamble <args>
+    aliases: [casino]
     permission: gambling.use
 
 permissions:

@@ -18,6 +18,13 @@ import java.util.UUID;
 
 public class RouletteSelectionGUI implements Listener {
 
+    public static class RouletteHolder implements org.bukkit.inventory.InventoryHolder {
+        @Override
+        public Inventory getInventory() {
+            return null;
+        }
+    }
+
     private final Map<UUID, Double> pendingBets = new HashMap<>();
 
     public RouletteSelectionGUI(GamblingPlugin plugin) {
@@ -26,14 +33,24 @@ public class RouletteSelectionGUI implements Listener {
     public void open(Player player, double betAmount) {
         pendingBets.put(player.getUniqueId(), betAmount);
 
-        Inventory inv = Bukkit.createInventory(null, 54, "Selección de Ruleta");
+        Inventory inv = Bukkit.createInventory(new RouletteHolder(), 54, "Selección de Ruleta");
 
         // Fill background
         fillBackground(inv);
 
-        // 0 and 00 (Green)
+        // Dozens (Slots 0, 1, 2)
+        inv.setItem(0, createItem(Material.GOLD_INGOT, "§61ª Docena (1-12)", "§7Paga 2:1 neto (3x)"));
+        inv.setItem(1, createItem(Material.GOLD_INGOT, "§62ª Docena (13-24)", "§7Paga 2:1 neto (3x)"));
+        inv.setItem(2, createItem(Material.GOLD_INGOT, "§63ª Docena (25-36)", "§7Paga 2:1 neto (3x)"));
+
+        // 0 and 00 (Green) (Slots 4, 5)
         inv.setItem(4, createItem(Material.LIME_CONCRETE, "§a0", "§7Paga 36:1"));
         inv.setItem(5, createItem(Material.LIME_CONCRETE, "§a00", "§7Paga 36:1"));
+
+        // Columns (Slots 6, 7, 8)
+        inv.setItem(6, createItem(Material.RAW_GOLD, "§eColumna 1", "§7Paga 2:1 neto (3x)"));
+        inv.setItem(7, createItem(Material.RAW_GOLD, "§eColumna 2", "§7Paga 2:1 neto (3x)"));
+        inv.setItem(8, createItem(Material.RAW_GOLD, "§eColumna 3", "§7Paga 2:1 neto (3x)"));
 
         // Numbers 1-36
         for (int i = 1; i <= 36; i++) {
@@ -84,11 +101,11 @@ public class RouletteSelectionGUI implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!event.getView().getTitle().equals("Selección de Ruleta"))
+        if (!(event.getView().getTopInventory().getHolder() instanceof RouletteHolder))
             return;
 
         event.setCancelled(true);
-        Player player = (Player) event.getWhoClicked();
+        if (!(event.getWhoClicked() instanceof Player player)) return;
         ItemStack clicked = event.getCurrentItem();
 
         if (clicked == null || clicked.getType() == Material.AIR
@@ -116,6 +133,18 @@ public class RouletteSelectionGUI implements Listener {
             choice = "low";
         else if (name.equals("§b19-36"))
             choice = "high";
+        else if (name.contains("1ª Docena"))
+            choice = "1st12";
+        else if (name.contains("2ª Docena"))
+            choice = "2nd12";
+        else if (name.contains("3ª Docena"))
+            choice = "3rd12";
+        else if (name.contains("Columna 1"))
+            choice = "col1";
+        else if (name.contains("Columna 2"))
+            choice = "col2";
+        else if (name.contains("Columna 3"))
+            choice = "col3";
         else {
             // It's a number
             try {
@@ -133,6 +162,13 @@ public class RouletteSelectionGUI implements Listener {
             player.playSound(player.getLocation(), org.bukkit.Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
             player.performCommand("gamble roulette " + bet + " " + choice);
             pendingBets.remove(player.getUniqueId());
+        }
+    }
+
+    @EventHandler
+    public void onInventoryDrag(org.bukkit.event.inventory.InventoryDragEvent event) {
+        if (event.getView().getTopInventory().getHolder() instanceof RouletteHolder) {
+            event.setCancelled(true);
         }
     }
 }

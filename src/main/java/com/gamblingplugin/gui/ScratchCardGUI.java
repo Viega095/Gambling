@@ -130,10 +130,12 @@ public class ScratchCardGUI implements Listener {
             }
         }
 
-        // Buy new cards shortcuts (Slots 46: $100, 48: $500, 50: $1,000)
+        // Buy new cards shortcuts
+        inv.setItem(45, createBtn(Material.NETHER_WART, "§c🔥 Tesoros del Nether ($2,500)", Arrays.asList("§7Premio máx: $250,000", "§e▶ Clic para comprar")));
         inv.setItem(46, createBtn(Material.IRON_NUGGET, "§f🎟️ Raspe Plata ($100)", Arrays.asList("§7Premio máx: $10,000", "§e▶ Clic para comprar")));
         inv.setItem(48, createBtn(Material.GOLD_NUGGET, "§e🎟️ Raspe Oro ($500)", Arrays.asList("§7Premio máx: $50,000", "§e▶ Clic para comprar")));
         inv.setItem(50, createBtn(Material.DIAMOND, "§b🎟️ Raspe Diamante ($1,000)", Arrays.asList("§7Premio máx: $100,000", "§e▶ Clic para comprar")));
+        inv.setItem(51, createBtn(Material.NETHER_STAR, "§6⚡ Olimpo Dorado ($5,000)", Arrays.asList("§7Premio máx: $500,000", "§e▶ Clic para comprar")));
 
         player.openInventory(inv);
     }
@@ -169,9 +171,11 @@ public class ScratchCardGUI implements Listener {
         ActiveCard card = activeCards.get(player.getUniqueId());
 
         int slot = event.getRawSlot();
+        if (slot == 45) { openNewCard(player, 2500.0); return; }
         if (slot == 46) { openNewCard(player, 100.0); return; }
         if (slot == 48) { openNewCard(player, 500.0); return; }
         if (slot == 50) { openNewCard(player, 1000.0); return; }
+        if (slot == 51) { openNewCard(player, 5000.0); return; }
 
         if (card == null || card.finalized) return;
 
@@ -227,6 +231,13 @@ public class ScratchCardGUI implements Listener {
             card.finalized = true;
             player.sendMessage("§c🎟️ [Raspe de la Fortuna] No hubo 3 figuras iguales en esta tarjeta. ¡Prueba otra!");
             player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 0.4f, 0.8f);
+        }
+    }
+
+    @EventHandler
+    public void onDrag(InventoryDragEvent event) {
+        if (event.getView().getTopInventory().getHolder() instanceof ScratchHolder) {
+            event.setCancelled(true);
         }
     }
 }

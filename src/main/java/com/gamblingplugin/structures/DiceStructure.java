@@ -29,6 +29,20 @@ public class DiceStructure {
         World world = center.getWorld();
         if (world == null) return;
 
+        // 0. Clean up any leftover orphan stands or stray red blocks from previous versions
+        for (org.bukkit.entity.Entity entity : world.getNearbyEntities(center, 2.5, 2.5, 2.5)) {
+            if (entity instanceof ArmorStand stand && !stand.isVisible()) {
+                ItemStack helmet = stand.getEquipment().getHelmet();
+                if (helmet != null && (helmet.getType() == Material.RED_CONCRETE || helmet.getType() == Material.WHITE_CONCRETE)) {
+                    stand.remove();
+                }
+            }
+        }
+        org.bukkit.block.Block blockAbove = center.clone().add(0, 1, 0).getBlock();
+        if (blockAbove.getType() == Material.RED_CONCRETE || blockAbove.getType() == Material.RED_WOOL) {
+            blockAbove.setType(Material.AIR);
+        }
+
         // 1. Hologram Stand
         holoStand = (ArmorStand) world.spawnEntity(center.clone().add(0, 0.4, 0), EntityType.ARMOR_STAND);
         holoStand.setVisible(false);

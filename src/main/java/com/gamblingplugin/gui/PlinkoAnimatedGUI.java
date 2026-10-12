@@ -6,13 +6,26 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 
-public class PlinkoAnimatedGUI {
+public class PlinkoAnimatedGUI implements Listener {
+
+    public static class PlinkoAnimatedHolder implements InventoryHolder {
+        @Override
+        public Inventory getInventory() {
+            return null;
+        }
+    }
 
     private final GamblingPlugin plugin;
     private final String mode;
@@ -35,7 +48,7 @@ public class PlinkoAnimatedGUI {
 
     public void playAnimation(Player player, double betPerBall, int totalBalls) {
         String title = TITLE + getModeName();
-        Inventory inv = Bukkit.createInventory(null, 54, title);
+        Inventory inv = Bukkit.createInventory(new PlinkoAnimatedHolder(), 54, title);
 
         // Initial setup with pyramid
         setupPyramid(inv);
@@ -351,6 +364,20 @@ public class PlinkoAnimatedGUI {
             if (multiplier >= 1.0)
                 return "§e" + multiplier + "x";
             return "§c" + multiplier + "x";
+        }
+    }
+
+    @EventHandler
+    public void onClick(InventoryClickEvent event) {
+        if (event.getView().getTopInventory().getHolder() instanceof PlinkoAnimatedHolder) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onDrag(InventoryDragEvent event) {
+        if (event.getView().getTopInventory().getHolder() instanceof PlinkoAnimatedHolder) {
+            event.setCancelled(true);
         }
     }
 }

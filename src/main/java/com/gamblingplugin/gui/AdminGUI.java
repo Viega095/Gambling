@@ -15,6 +15,13 @@ import java.util.Arrays;
 
 public class AdminGUI implements Listener {
 
+    public static class AdminHolder implements org.bukkit.inventory.InventoryHolder {
+        @Override
+        public Inventory getInventory() {
+            return null;
+        }
+    }
+
     private final GamblingPlugin plugin;
 
     public AdminGUI(GamblingPlugin plugin) {
@@ -27,7 +34,7 @@ public class AdminGUI implements Listener {
             return;
         }
 
-        Inventory inv = Bukkit.createInventory(null, 54, "§c§lGAMBLING ADMIN");
+        Inventory inv = Bukkit.createInventory(new AdminHolder(), 54, "§c§lGAMBLING ADMIN");
 
         // Structure Management
         ItemStack structures = createItem(Material.BEACON, "§6Gestión de Estructuras",
@@ -126,14 +133,12 @@ public class AdminGUI implements Listener {
 
     @EventHandler
     public void onClick(InventoryClickEvent e) {
-        if (!(e.getWhoClicked() instanceof Player))
-            return;
-        Player player = (Player) e.getWhoClicked();
-
-        if (!e.getView().getTitle().equals("§c§lGAMBLING ADMIN"))
+        if (!(e.getView().getTopInventory().getHolder() instanceof AdminHolder))
             return;
 
         e.setCancelled(true);
+        if (!(e.getWhoClicked() instanceof Player player))
+            return;
 
         ItemStack clicked = e.getCurrentItem();
         if (clicked == null || clicked.getType() == Material.AIR)
@@ -275,5 +280,12 @@ public class AdminGUI implements Listener {
             item.setItemMeta(meta);
         }
         return item;
+    }
+
+    @EventHandler
+    public void onDrag(org.bukkit.event.inventory.InventoryDragEvent e) {
+        if (e.getView().getTopInventory().getHolder() instanceof AdminHolder) {
+            e.setCancelled(true);
+        }
     }
 }

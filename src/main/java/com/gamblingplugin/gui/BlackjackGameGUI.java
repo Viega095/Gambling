@@ -20,6 +20,13 @@ import java.util.*;
 
 public class BlackjackGameGUI implements Listener {
 
+    public static class BlackjackGameHolder implements org.bukkit.inventory.InventoryHolder {
+        @Override
+        public Inventory getInventory() {
+            return null;
+        }
+    }
+
     private final GamblingPlugin plugin;
     private static final String TITLE_PREFIX = "§0§l♠ BLACKJACK ♥ - ";
 

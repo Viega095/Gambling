@@ -97,132 +97,184 @@ public class StructureManager {
         // Load Roulettes
         if (structuresConfig.getConfigurationSection("roulettes") != null) {
             for (String id : structuresConfig.getConfigurationSection("roulettes").getKeys(false)) {
-                Location loc = stringToLocation(structuresConfig.getString("roulettes." + id));
-                if (loc != null) {
-                    RouletteWheel wheel = new RouletteWheel(plugin, loc, id);
-                    wheel.spawn();
-                    rouletteWheels.put(id, wheel);
+                try {
+                    Location loc = stringToLocation(structuresConfig.getString("roulettes." + id));
+                    if (loc != null) {
+                        RouletteWheel wheel = new RouletteWheel(plugin, loc, id);
+                        wheel.spawn();
+                        rouletteWheels.put(id, wheel);
+                    }
+                } catch (Exception e) {
+                    plugin.getLogger().warning("Error restoring Roulette (" + id + "): " + e.getMessage());
                 }
             }
         }
 
         // Load Dice
         for (String s : structuresConfig.getStringList("dice")) {
-            Location loc = stringToLocation(s);
-            if (loc != null) {
-                DiceStructure d = new DiceStructure(plugin, loc);
-                d.spawn();
-                diceStructures.put(loc, d);
+            try {
+                Location loc = stringToLocation(s);
+                if (loc != null) {
+                    DiceStructure d = new DiceStructure(plugin, loc);
+                    d.spawn();
+                    diceStructures.put(loc, d);
+                }
+            } catch (Exception e) {
+                plugin.getLogger().warning("Error restoring Dice structure at " + s + ": " + e.getMessage());
             }
         }
 
         // Load Coinflip
         for (String s : structuresConfig.getStringList("coinflips")) {
-            Location loc = stringToLocation(s);
-            if (loc != null) {
-                CoinflipStructure c = new CoinflipStructure(plugin, loc);
-                c.spawn();
-                coinflipStructures.put(loc, c);
+            try {
+                Location loc = stringToLocation(s);
+                if (loc != null) {
+                    CoinflipStructure c = new CoinflipStructure(plugin, loc);
+                    c.spawn();
+                    coinflipStructures.put(loc, c);
+                }
+            } catch (Exception e) {
+                plugin.getLogger().warning("Error restoring Coinflip structure at " + s + ": " + e.getMessage());
             }
         }
 
         // Load Mines
         for (String s : structuresConfig.getStringList("mines")) {
-            Location loc = stringToLocation(s);
-            if (loc != null) {
-                MinesStructure m = new MinesStructure(plugin, loc);
-                m.spawn();
-                minesStructures.put(loc, m);
+            try {
+                Location loc = stringToLocation(s);
+                if (loc != null) {
+                    MinesStructure m = new MinesStructure(plugin, loc);
+                    m.spawn();
+                    minesStructures.put(loc, m);
+                }
+            } catch (Exception e) {
+                plugin.getLogger().warning("Error restoring Mines structure at " + s + ": " + e.getMessage());
             }
         }
 
         // Load Cases
         for (String s : structuresConfig.getStringList("cases")) {
-            Location loc = stringToLocation(s);
-            if (loc != null) {
-                CaseStructure cs = new CaseStructure(plugin, loc);
-                cs.spawn();
-                caseStructures.put(loc, cs);
+            try {
+                Location loc = stringToLocation(s);
+                if (loc != null) {
+                    CaseStructure cs = new CaseStructure(plugin, loc);
+                    cs.spawn();
+                    caseStructures.put(loc, cs);
+                }
+            } catch (Exception e) {
+                plugin.getLogger().warning("Error restoring Case structure at " + s + ": " + e.getMessage());
             }
         }
 
         // Load Plinko
         for (String s : structuresConfig.getStringList("plinko")) {
-            Location loc = stringToLocation(s);
-            if (loc != null) {
-                PlinkoStructure p = new PlinkoStructure(plugin, loc);
-                p.spawn();
-                plinkoStructures.put(loc, p);
+            try {
+                Location loc = stringToLocation(s);
+                if (loc != null) {
+                    PlinkoStructure p = new PlinkoStructure(plugin, loc);
+                    p.spawn();
+                    plinkoStructures.put(loc, p);
+                }
+            } catch (Exception e) {
+                plugin.getLogger().warning("Error restoring Plinko structure at " + s + ": " + e.getMessage());
             }
         }
 
         // Load Blackjack
         for (String s : structuresConfig.getStringList("blackjack")) {
-            Location loc = stringToLocation(s);
-            if (loc != null) {
-                BlackjackStructure b = new BlackjackStructure(plugin, loc);
-                b.spawn();
-                blackjackStructures.put(loc, b);
+            try {
+                Location loc = stringToLocation(s);
+                if (loc != null) {
+                    BlackjackStructure b = new BlackjackStructure(plugin, loc);
+                    b.spawn();
+                    blackjackStructures.put(loc, b);
+                }
+            } catch (Exception e) {
+                plugin.getLogger().warning("Error restoring Blackjack structure at " + s + ": " + e.getMessage());
             }
         }
 
         // Load Crash
         for (String s : structuresConfig.getStringList("crash")) {
-            Location loc = stringToLocation(s);
-            if (loc != null) {
-                CrashStructure cr = new CrashStructure(plugin, loc);
-                cr.spawn();
-                crashStructures.put(loc, cr);
+            try {
+                Location loc = stringToLocation(s);
+                if (loc != null) {
+                    CrashStructure cr = new CrashStructure(plugin, loc);
+                    cr.spawn();
+                    crashStructures.put(loc, cr);
+                }
+            } catch (Exception e) {
+                plugin.getLogger().warning("Error restoring Crash structure at " + s + ": " + e.getMessage());
             }
         }
 
         // Load Baccarat
         for (String s : structuresConfig.getStringList("baccarat")) {
-            Location loc = stringToLocation(s);
-            if (loc != null) {
-                BaccaratStructure bac = new BaccaratStructure(plugin, loc);
-                bac.spawn();
-                baccaratStructures.put(loc, bac);
+            try {
+                Location loc = stringToLocation(s);
+                if (loc != null) {
+                    BaccaratStructure bac = new BaccaratStructure(plugin, loc);
+                    bac.spawn();
+                    baccaratStructures.put(loc, bac);
+                }
+            } catch (Exception e) {
+                plugin.getLogger().warning("Error restoring Baccarat structure at " + s + ": " + e.getMessage());
             }
         }
 
         // Load Lottery
         for (String s : structuresConfig.getStringList("lottery")) {
-            Location loc = stringToLocation(s);
-            if (loc != null) {
-                LotteryStructure lot = new LotteryStructure(plugin, loc);
-                lot.spawn();
-                lotteryStructures.put(loc, lot);
+            try {
+                Location loc = stringToLocation(s);
+                if (loc != null) {
+                    LotteryStructure lot = new LotteryStructure(plugin, loc);
+                    lot.spawn();
+                    lotteryStructures.put(loc, lot);
+                }
+            } catch (Exception e) {
+                plugin.getLogger().warning("Error restoring Lottery structure at " + s + ": " + e.getMessage());
             }
         }
 
         // Load VIP Lounge
         for (String s : structuresConfig.getStringList("vipLounge")) {
-            Location loc = stringToLocation(s);
-            if (loc != null) {
-                VIPLoungeStructure vip = new VIPLoungeStructure(plugin, loc);
-                vip.spawn();
-                vipLoungeStructures.put(loc, vip);
+            try {
+                Location loc = stringToLocation(s);
+                if (loc != null) {
+                    VIPLoungeStructure vip = new VIPLoungeStructure(plugin, loc);
+                    vip.spawn();
+                    vipLoungeStructures.put(loc, vip);
+                }
+            } catch (Exception e) {
+                plugin.getLogger().warning("Error restoring VIP Lounge structure at " + s + ": " + e.getMessage());
             }
         }
 
         // Load Mega Wheels
         for (String s : structuresConfig.getStringList("wheels")) {
-            Location loc = stringToLocation(s);
-            if (loc != null) {
-                WheelStructure w = new WheelStructure(plugin, loc);
-                w.spawn();
-                wheelStructures.put(loc, w);
+            try {
+                Location loc = stringToLocation(s);
+                if (loc != null) {
+                    WheelStructure w = new WheelStructure(plugin, loc);
+                    w.spawn();
+                    wheelStructures.put(loc, w);
+                }
+            } catch (Exception e) {
+                plugin.getLogger().warning("Error restoring Wheel structure at " + s + ": " + e.getMessage());
             }
         }
 
         // Load Slots 3D
         for (String s : structuresConfig.getStringList("slots")) {
-            Location loc = stringToLocation(s);
-            if (loc != null) {
-                Slots3DStructure slot = new Slots3DStructure(plugin, loc);
-                slot.spawn();
-                slotsStructures.put(loc, slot);
+            try {
+                Location loc = stringToLocation(s);
+                if (loc != null) {
+                    Slots3DStructure slot = new Slots3DStructure(plugin, loc);
+                    slot.spawn();
+                    slotsStructures.put(loc, slot);
+                }
+            } catch (Exception e) {
+                plugin.getLogger().warning("Error restoring Slots 3D structure at " + s + ": " + e.getMessage());
             }
         }
 

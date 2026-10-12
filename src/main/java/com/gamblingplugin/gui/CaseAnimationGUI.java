@@ -6,7 +6,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -16,7 +21,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-public class CaseAnimationGUI {
+public class CaseAnimationGUI implements Listener {
+
+    public static class CaseAnimationHolder implements InventoryHolder {
+        @Override
+        public Inventory getInventory() {
+            return null;
+        }
+    }
 
     private final GamblingPlugin plugin;
     private final Random random = new Random();
@@ -27,7 +39,7 @@ public class CaseAnimationGUI {
 
     public void open(Player player, CaseOpening.CaseType caseType, CaseOpening.Rarity winningRarity, double bet,
             double winnings) {
-        Inventory inv = Bukkit.createInventory(null, 27, "§6§lOPENING " + caseType.name() + " CASE...");
+        Inventory inv = Bukkit.createInventory(new CaseAnimationHolder(), 27, "§6§lOPENING " + caseType.name() + " CASE...");
 
         // Create item list for animation (30 items)
         List<ItemStack> items = new ArrayList<>();
@@ -53,7 +65,7 @@ public class CaseAnimationGUI {
 
             @Override
             public void run() {
-                if (!player.getOpenInventory().getTitle().contains("OPENING")) {
+                if (!(player.getOpenInventory().getTopInventory().getHolder() instanceof CaseAnimationHolder)) {
                     this.cancel();
                     return;
                 }
@@ -167,5 +179,19 @@ public class CaseAnimationGUI {
         item.setItemMeta(meta);
 
         return item;
+    }
+
+    @EventHandler
+    public void onClick(InventoryClickEvent event) {
+        if (event.getView().getTopInventory().getHolder() instanceof CaseAnimationHolder) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onDrag(InventoryDragEvent event) {
+        if (event.getView().getTopInventory().getHolder() instanceof CaseAnimationHolder) {
+            event.setCancelled(true);
+        }
     }
 }

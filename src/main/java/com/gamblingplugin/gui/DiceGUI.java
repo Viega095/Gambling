@@ -15,6 +15,13 @@ import java.util.Arrays;
 
 public class DiceGUI implements Listener {
 
+    public static class DiceHolder implements org.bukkit.inventory.InventoryHolder {
+        @Override
+        public Inventory getInventory() {
+            return null;
+        }
+    }
+
     private final GamblingPlugin plugin;
     private final String TITLE = "§6§lDados";
 
@@ -23,7 +30,7 @@ public class DiceGUI implements Listener {
     }
 
     public void open(Player player) {
-        Inventory inv = Bukkit.createInventory(null, 27, TITLE);
+        Inventory inv = Bukkit.createInventory(new DiceHolder(), 27, TITLE);
 
         // Specific numbers (slots 10-15)
         for (int i = 1; i <= 6; i++) {
@@ -50,6 +57,32 @@ public class DiceGUI implements Listener {
                 "§eGanas si sale 1, 2 o 3"));
         lowRange.setItemMeta(lowMeta);
         inv.setItem(19, lowRange);
+
+        // Craps Pass (7 u 11) - Slot 20
+        ItemStack crapsPass = new ItemStack(Material.AMETHYST_SHARD);
+        ItemMeta crapsMeta = crapsPass.getItemMeta();
+        crapsMeta.setDisplayName("§b§lPase Craps (7 u 11)");
+        crapsMeta.setLore(Arrays.asList(
+                "§7Suma de 2 dados lanzados",
+                "§7Probabilidad: §e22.2%",
+                "§7Payout: §ax2.0",
+                "",
+                "§eGanas si la suma es 7 u 11"));
+        crapsPass.setItemMeta(crapsMeta);
+        inv.setItem(20, crapsPass);
+
+        // Craps Doubles (Pares) - Slot 24
+        ItemStack crapsDoubles = new ItemStack(Material.NETHER_STAR);
+        ItemMeta doublesMeta = crapsDoubles.getItemMeta();
+        doublesMeta.setDisplayName("§d§lDados Dobles (Pares)");
+        doublesMeta.setLore(Arrays.asList(
+                "§7Ambos dados con el mismo valor",
+                "§7Probabilidad: §e16.67%",
+                "§7Payout: §ax5.0",
+                "",
+                "§eGanas si ambos dados son iguales"));
+        crapsDoubles.setItemMeta(doublesMeta);
+        inv.setItem(24, crapsDoubles);
 
         // High range (4-6) - Slot 25
         ItemStack highRange = new ItemStack(Material.EMERALD);
@@ -83,13 +116,12 @@ public class DiceGUI implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!event.getView().getTitle().equals(TITLE))
+        if (!(event.getView().getTopInventory().getHolder() instanceof DiceHolder))
             return;
         event.setCancelled(true);
 
-        if (!(event.getWhoClicked() instanceof Player))
+        if (!(event.getWhoClicked() instanceof Player player))
             return;
-        Player player = (Player) event.getWhoClicked();
 
         if (event.getCurrentItem() == null)
             return;
@@ -107,6 +139,14 @@ public class DiceGUI implements Listener {
         else if (slot == 19) {
             betType = "LOW_RANGE";
         }
+        // Craps Pass
+        else if (slot == 20) {
+            betType = "CRAPS_PASS";
+        }
+        // Craps Doubles
+        else if (slot == 24) {
+            betType = "CRAPS_DOUBLES";
+        }
         // High range
         else if (slot == 25) {
             betType = "HIGH_RANGE";
@@ -114,10 +154,15 @@ public class DiceGUI implements Listener {
 
         if (betType != null) {
             player.closeInventory();
-            // Open betting GUI with dice bet info (use plugin singleton!)
-            // Store both betType and specificNumber as selection
             String selection = betType + ":" + specificNumber;
             plugin.getBettingGUI().open(player, "dice", selection);
+        }
+    }
+
+    @EventHandler
+    public void onInventoryDrag(org.bukkit.event.inventory.InventoryDragEvent event) {
+        if (event.getView().getTopInventory().getHolder() instanceof DiceHolder) {
+            event.setCancelled(true);
         }
     }
 }

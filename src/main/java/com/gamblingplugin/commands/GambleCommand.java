@@ -42,6 +42,11 @@ public class GambleCommand implements CommandExecutor {
         }
 
         // Handle single-argument commands first
+        if (args.length >= 1 && (args[0].equalsIgnoreCase("guia") || args[0].equalsIgnoreCase("contenido") || args[0].equalsIgnoreCase("compendio"))) {
+            new com.gamblingplugin.gui.CasinoContentGuideGUI(plugin).open(player);
+            return true;
+        }
+
         if (args.length == 0 || (args.length == 1 && (args[0].equalsIgnoreCase("guide") || args[0].equalsIgnoreCase("menu")))) {
             sendInteractiveGuide(player);
             return true;
@@ -949,6 +954,7 @@ public class GambleCommand implements CommandExecutor {
     private void sendInteractiveGuide(Player player) {
         player.sendMessage("§6╔════════════════════════════════════════════════╗");
         player.sendMessage("§6║       §e🎰 GUÍA MAESTRA DE CASINO Y APUESTAS§6      ║");
+        sendClickable(player, "§a📖 §l[ABRIR COMPENDIO Y GUÍA VISUAL DEL CASINO]", "/gamble guia", "§aAbre la enciclopedia gráfica con todas las mesas, reglas y economía");
         sendClickable(player, "§6🧪 §l[ABRIR PANEL MAESTRO DE PRUEBAS DEL CASINO GUI]", "/gamble test", "§aAbre el laboratorio visual para probar todos los juegos y jackpots");
         sendClickable(player, "§6▶ §eBóveda Segura & Tarjeta VIP §7(/gamble vault)", "/gamble vault", "§aGuardar saldo, ganar interés diario y reclamar cashback");
         sendClickable(player, "§6▶ §eHipódromo y Carreras de Caballos §7(/gamble race)", "/gamble race", "§aApostar en carreras de caballos animadas");

@@ -57,7 +57,9 @@ public class Slots3DStructure {
         jackpotHoloStand.setVisible(false);
         jackpotHoloStand.setGravity(false);
         jackpotHoloStand.setMarker(true);
-        double pot = plugin.getJackpotManager().getJackpotAmount();
+        double pot = (plugin != null && plugin.getJackpotManager() != null)
+                ? plugin.getJackpotManager().getJackpotAmount()
+                : 10000.0;
         jackpotHoloStand.setCustomName("§6✦ POZO JACKPOT: §a$" + String.format("%.2f", pot) + " §6✦");
         jackpotHoloStand.setCustomNameVisible(true);
 
@@ -101,7 +103,9 @@ public class Slots3DStructure {
 
                 // Update jackpot live counter every 20 ticks
                 if ((int) (tick * 20) % 20 == 0 && jackpotHoloStand != null && jackpotHoloStand.isValid()) {
-                    double pot = plugin.getJackpotManager().getJackpotAmount();
+                    double pot = (plugin != null && plugin.getJackpotManager() != null)
+                            ? plugin.getJackpotManager().getJackpotAmount()
+                            : 10000.0;
                     jackpotHoloStand.setCustomName("§6✦ POZO JACKPOT: §a$" + String.format("%.2f", pot) + " §6✦");
                 }
 
@@ -130,7 +134,9 @@ public class Slots3DStructure {
         }
 
         plugin.getEconomyManager().withdraw(player, bet);
-        plugin.getJackpotManager().contributeBet(bet);
+        if (plugin.getJackpotManager() != null) {
+            plugin.getJackpotManager().contributeBet(bet);
+        }
         isSpinning = true;
 
         World world = center.getWorld();
@@ -308,7 +314,9 @@ public class Slots3DStructure {
         }
 
         // Jackpot bonus check
-        plugin.getJackpotManager().tryWinJackpot(player, bet);
+        if (plugin != null && plugin.getJackpotManager() != null) {
+            plugin.getJackpotManager().tryWinJackpot(player, bet);
+        }
 
         if (callback != null) callback.run();
 

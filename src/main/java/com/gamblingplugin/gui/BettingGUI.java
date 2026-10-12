@@ -19,6 +19,13 @@ import java.util.UUID;
 
 public class BettingGUI implements Listener {
 
+    public static class BettingHolder implements org.bukkit.inventory.InventoryHolder {
+        @Override
+        public Inventory getInventory() {
+            return null;
+        }
+    }
+
     private final GamblingPlugin plugin;
     private final Map<UUID, Double> currentBets = new HashMap<>();
     private final Map<UUID, String> activeGame = new HashMap<>(); // "roulette", "dice", "coinflip"
@@ -40,7 +47,7 @@ public class BettingGUI implements Listener {
         }
         currentBets.put(player.getUniqueId(), 0.0);
 
-        Inventory inv = Bukkit.createInventory(null, 36, "Realiza tu Apuesta");
+        Inventory inv = Bukkit.createInventory(new BettingHolder(), 36, "Realiza tu Apuesta");
 
         // Fill background
         fillBackground(inv);
@@ -129,7 +136,7 @@ public class BettingGUI implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!event.getView().getTitle().equals("Realiza tu Apuesta"))
+        if (!(event.getView().getTopInventory().getHolder() instanceof BettingHolder))
             return;
 
         event.setCancelled(true);
@@ -251,7 +258,7 @@ public class BettingGUI implements Listener {
         }
         currentBets.put(player.getUniqueId(), customBet);
 
-        Inventory inv = Bukkit.createInventory(null, 36, "Realiza tu Apuesta");
+        Inventory inv = Bukkit.createInventory(new BettingHolder(), 36, "Realiza tu Apuesta");
         fillBackground(inv);
 
         // Show chips (disabled)
@@ -269,5 +276,12 @@ public class BettingGUI implements Listener {
         updateConfirmButton(inv, customBet);
 
         player.openInventory(inv);
+    }
+
+    @EventHandler
+    public void onDrag(org.bukkit.event.inventory.InventoryDragEvent event) {
+        if (event.getView().getTopInventory().getHolder() instanceof BettingHolder) {
+            event.setCancelled(true);
+        }
     }
 }

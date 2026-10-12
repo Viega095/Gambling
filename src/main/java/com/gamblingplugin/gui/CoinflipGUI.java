@@ -16,15 +16,22 @@ import java.util.Arrays;
 
 public class CoinflipGUI implements Listener {
 
+    public static class CoinflipHolder implements org.bukkit.inventory.InventoryHolder {
+        @Override
+        public Inventory getInventory() {
+            return null;
+        }
+    }
+
     private final GamblingPlugin plugin;
-    private final String TITLE = "§6§lCoinflip";
+    private final String TITLE = "§6§lCoinflip 3D";
 
     public CoinflipGUI(GamblingPlugin plugin) {
         this.plugin = plugin;
     }
 
     public void open(Player player) {
-        Inventory inv = Bukkit.createInventory(null, 27, TITLE);
+        Inventory inv = Bukkit.createInventory(new CoinflipHolder(), 27, TITLE);
 
         // HEADS option (Slot 11)
         ItemStack heads = new ItemStack(Material.GOLD_INGOT);
@@ -32,11 +39,27 @@ public class CoinflipGUI implements Listener {
         headsMeta.setDisplayName("§6§lCARA (HEADS)");
         headsMeta.setLore(Arrays.asList(
                 "§7Probabilidad: §e50%",
-                "§7Payout: §ax2",
+                "§7Payout: §ax2.0",
                 "",
                 "§eClick para elegir CARA"));
         heads.setItemMeta(headsMeta);
         inv.setItem(11, heads);
+
+        // STREAK MODE / CASHOUT option (Slot 13)
+        ItemStack streakBtn = new ItemStack(Material.NETHER_STAR);
+        ItemMeta sMeta = streakBtn.getItemMeta();
+        sMeta.setDisplayName("§e§lMODO RACHA (STREAK)");
+        sMeta.setLore(Arrays.asList(
+                "§7Acierta caras y cruces consecutivas",
+                "§7para multiplicar exponencialmente:",
+                "§a• 1 Acierto: §e1.9x",
+                "§a• 2 Aciertos: §e3.8x",
+                "§a• 3 Aciertos: §e7.6x",
+                "§a• 4 Aciertos: §e15.2x",
+                "",
+                "§eClick para jugar en MODO RACHA"));
+        streakBtn.setItemMeta(sMeta);
+        inv.setItem(13, streakBtn);
 
         // TAILS option (Slot 15)
         ItemStack tails = new ItemStack(Material.IRON_INGOT);
@@ -44,7 +67,7 @@ public class CoinflipGUI implements Listener {
         tailsMeta.setDisplayName("§7§lCRUZ (TAILS)");
         tailsMeta.setLore(Arrays.asList(
                 "§7Probabilidad: §e50%",
-                "§7Payout: §ax2",
+                "§7Payout: §ax2.0",
                 "",
                 "§eClick para elegir CRUZ"));
         tails.setItemMeta(tailsMeta);
@@ -60,7 +83,7 @@ public class CoinflipGUI implements Listener {
         glass.setItemMeta(glassMeta);
 
         for (int i = 0; i < 27; i++) {
-            if (i != 11 && i != 15 && i != 22) {
+            if (i != 11 && i != 13 && i != 15 && i != 22) {
                 inv.setItem(i, glass);
             }
         }
@@ -70,13 +93,12 @@ public class CoinflipGUI implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!event.getView().getTitle().equals(TITLE))
+        if (!(event.getView().getTopInventory().getHolder() instanceof CoinflipHolder))
             return;
         event.setCancelled(true);
 
-        if (!(event.getWhoClicked() instanceof Player))
+        if (!(event.getWhoClicked() instanceof Player player))
             return;
-        Player player = (Player) event.getWhoClicked();
 
         if (event.getCurrentItem() == null)
             return;
@@ -84,6 +106,8 @@ public class CoinflipGUI implements Listener {
         String side = null;
         if (event.getSlot() == 11) {
             side = "HEADS";
+        } else if (event.getSlot() == 13) {
+            side = "STREAK_HEADS";
         } else if (event.getSlot() == 15) {
             side = "TAILS";
         }
@@ -95,7 +119,13 @@ public class CoinflipGUI implements Listener {
 
         // Open betting GUI with selected side
         plugin.getBettingGUI().open(player, "coinflip", side);
-
         player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1f, 1.5f);
+    }
+
+    @EventHandler
+    public void onInventoryDrag(org.bukkit.event.inventory.InventoryDragEvent event) {
+        if (event.getView().getTopInventory().getHolder() instanceof CoinflipHolder) {
+            event.setCancelled(true);
+        }
     }
 }

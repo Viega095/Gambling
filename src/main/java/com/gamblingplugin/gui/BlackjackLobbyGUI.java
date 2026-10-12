@@ -18,6 +18,13 @@ import java.util.Arrays;
 
 public class BlackjackLobbyGUI implements Listener {
 
+    public static class BlackjackLobbyHolder implements org.bukkit.inventory.InventoryHolder {
+        @Override
+        public Inventory getInventory() {
+            return null;
+        }
+    }
+
     private final GamblingPlugin plugin;
     private static final String TITLE = "§0§lBLACKJACK - Elige apuesta";
     private BlackjackManager.BlackjackLobby activeLobby;
@@ -27,7 +34,7 @@ public class BlackjackLobbyGUI implements Listener {
     }
 
     public void open(Player player) {
-        Inventory inv = Bukkit.createInventory(null, 27, TITLE);
+        Inventory inv = Bukkit.createInventory(new BlackjackLobbyHolder(), 27, TITLE);
 
         // Background
         ItemStack glass = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
@@ -100,7 +107,7 @@ public class BlackjackLobbyGUI implements Listener {
 
     @EventHandler
     public void onClick(InventoryClickEvent event) {
-        if (!event.getView().getTitle().equals(TITLE)) {
+        if (!(event.getView().getTopInventory().getHolder() instanceof BlackjackLobbyHolder)) {
             return;
         }
 
@@ -201,5 +208,12 @@ public class BlackjackLobbyGUI implements Listener {
                 }
             }
         }.runTaskTimer(plugin, 20L, 20L);
+    }
+
+    @EventHandler
+    public void onDrag(org.bukkit.event.inventory.InventoryDragEvent event) {
+        if (event.getView().getTopInventory().getHolder() instanceof BlackjackLobbyHolder) {
+            event.setCancelled(true);
+        }
     }
 }

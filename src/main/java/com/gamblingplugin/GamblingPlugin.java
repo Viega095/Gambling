@@ -30,6 +30,7 @@ public class GamblingPlugin extends JavaPlugin {
     private com.gamblingplugin.manager.MegaJackpotEngine megaJackpotEngine;
     private com.gamblingplugin.gui.VIPGUI vipGUI;
     private com.gamblingplugin.games.CommunityRouletteTable communityRouletteTable;
+    private com.gamblingplugin.multiblock.CasinoMultiblockManager casinoMultiblockManager;
 
     @Override
     public void onEnable() {
@@ -40,7 +41,6 @@ public class GamblingPlugin extends JavaPlugin {
         this.economyManager = new EconomyManager(this);
         this.gameManager = new GameManager(this);
         this.statsManager = new StatsManager(this);
-        this.structureManager = new StructureManager(this);
         this.cooldownManager = new CooldownManager();
         this.jackpotManager = new JackpotManager(this);
         this.vipManager = new com.gamblingplugin.manager.VIPManager(this);
@@ -53,6 +53,9 @@ public class GamblingPlugin extends JavaPlugin {
         this.coinflipGUI = new com.gamblingplugin.gui.CoinflipGUI(this);
         this.diceGUI = new com.gamblingplugin.gui.DiceGUI(this);
         this.blackjackManager = new com.gamblingplugin.games.blackjack.BlackjackManager();
+        this.structureManager = new StructureManager(this);
+        this.casinoMultiblockManager = new com.gamblingplugin.multiblock.CasinoMultiblockManager(this);
+        this.casinoMultiblockManager.init();
 
         if (economyManager.getEconomy() == null) {
             getLogger().warning("Vault dependency not found! Economy features will be disabled.");
@@ -144,12 +147,18 @@ public class GamblingPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new com.gamblingplugin.gui.StructureSpawnSelectorGUI(this), this);
         getServer().getPluginManager().registerEvents(new com.gamblingplugin.gui.SlotsBettingGUI(this), this);
         getServer().getPluginManager().registerEvents(this.scratchCardGUI, this);
+        getServer().getPluginManager().registerEvents(new com.gamblingplugin.gui.KenoGUI(this), this);
+        getServer().getPluginManager().registerEvents(new com.gamblingplugin.gui.CasinoContentGuideGUI(this), this);
+        getServer().getPluginManager().registerEvents(new com.gamblingplugin.multiblock.CasinoMultiblockListener(this, this.casinoMultiblockManager), this);
 
         getLogger().info("GamblingPlugin has been enabled!");
     }
 
     @Override
     public void onDisable() {
+        if (casinoMultiblockManager != null) {
+            casinoMultiblockManager.shutdown();
+        }
         if (structureManager != null) {
             structureManager.removeAll();
         }
@@ -194,6 +203,14 @@ public class GamblingPlugin extends JavaPlugin {
 
     public com.gamblingplugin.gui.RouletteSelectionGUI getRouletteSelectionGUI() {
         return rouletteSelectionGUI;
+    }
+
+    public com.gamblingplugin.gui.CoinflipGUI getCoinflipGUI() {
+        return coinflipGUI;
+    }
+
+    public com.gamblingplugin.multiblock.CasinoMultiblockManager getCasinoMultiblockManager() {
+        return casinoMultiblockManager;
     }
 
     public CooldownManager getCooldownManager() {
