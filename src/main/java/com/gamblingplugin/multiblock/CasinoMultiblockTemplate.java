@@ -244,38 +244,18 @@ public class CasinoMultiblockTemplate {
         if (world == null) return false;
 
         for (BlockOffset offset : relativeBlocks.keySet()) {
-            // Ignore the base block being placed right now
-            if (offset.getDx() == 0 && offset.getDy() == 0 && offset.getDz() == 0) {
-                continue;
-            }
-
             Location targetLoc = offset.toLocation(baseLocation);
-            Block b = world.getBlockAt(targetLoc);
-            if (!b.isEmpty() && !b.isLiquid() && !b.isPassable()) {
-                Material mat = b.getType();
-                if (mat != Material.AIR && mat != Material.CAVE_AIR && mat != Material.VOID_AIR &&
-                        mat != Material.SHORT_GRASS && mat != Material.TALL_GRASS &&
-                        mat != Material.SNOW && mat != Material.FERN) {
-                    return false;
-                }
+            if (targetLoc.getBlockY() < world.getMinHeight() || targetLoc.getBlockY() >= world.getMaxHeight()) {
+                return false;
             }
-        }
-
-        // Check vertical headroom for 3D entities
-        int maxDy = 2;
-        if (type == CasinoMultiblockType.WHEEL_OF_FORTUNE) maxDy = 5;
-        for (int dy = 1; dy <= maxDy; dy++) {
-            final int targetDy = dy;
-            Block b = world.getBlockAt(baseLocation.clone().add(0, dy, 0));
+            Block b = world.getBlockAt(targetLoc);
             Material mat = b.getType();
-            if (mat != Material.AIR && mat != Material.CAVE_AIR && mat != Material.VOID_AIR &&
-                    mat != Material.SHORT_GRASS && mat != Material.TALL_GRASS &&
-                    mat != Material.IRON_BARS && mat != Material.TARGET &&
-                    relativeBlocks.keySet().stream().noneMatch(o -> o.getDx() == 0 && o.getDy() == targetDy && o.getDz() == 0)) {
+            if (mat == Material.BEDROCK || mat == Material.BARRIER || mat == Material.END_PORTAL ||
+                    mat == Material.END_PORTAL_FRAME || mat == Material.COMMAND_BLOCK ||
+                    mat == Material.STRUCTURE_BLOCK) {
                 return false;
             }
         }
-
         return true;
     }
 }
