@@ -69,17 +69,17 @@ public class CasinoTycoonManager implements Listener {
 
         TycoonProfile prof = getProfile(player.getUniqueId());
 
-        // Slot 11: Mesa de Blackjack ($25,000)
+        // Slot 11: Mesa de Blackjack (25,000 monedas)
         inv.setItem(11, createBtn(Material.DARK_OAK_SIGN, "§a♠ Comprar Mesa de Blackjack",
-                Arrays.asList("§7Poseídas: §e" + prof.ownedBlackjackTables, "§7Genera: §a$25-$50 / minuto", "§7Costo: §6$25,000", "", "§a▶ Clic para comprar mesa")));
+                Arrays.asList("§7Poseídas: §e" + prof.ownedBlackjackTables, "§7Genera: §a25-50 monedas / minuto", "§7Costo: §625,000 monedas", "", "§a▶ Clic para comprar mesa")));
 
-        // Slot 13: Mesa de Ruleta ($40,000)
+        // Slot 13: Mesa de Ruleta (40,000 monedas)
         inv.setItem(13, createBtn(Material.RED_TERRACOTTA, "§c🎡 Comprar Ruleta Europea VIP",
-                Arrays.asList("§7Poseídas: §e" + prof.ownedRouletteTables, "§7Genera: §a$50-$90 / minuto", "§7Costo: §6$40,000", "", "§a▶ Clic para comprar mesa")));
+                Arrays.asList("§7Poseídas: §e" + prof.ownedRouletteTables, "§7Genera: §a50-90 monedas / minuto", "§7Costo: §640,000 monedas", "", "§a▶ Clic para comprar mesa")));
 
-        // Slot 15: Estación Crash 3D ($75,000)
+        // Slot 15: Estación Crash 3D (75,000 monedas)
         inv.setItem(15, createBtn(Material.FIREWORK_ROCKET, "§b🚀 Comprar Estación Crash 3D",
-                Arrays.asList("§7Poseídas: §e" + prof.ownedCrashRockets, "§7Genera: §a$100-$180 / minuto", "§7Costo: §6$75,000", "", "§a▶ Clic para comprar estación")));
+                Arrays.asList("§7Poseídas: §e" + prof.ownedCrashRockets, "§7Genera: §a100-180 monedas / minuto", "§7Costo: §675,000 monedas", "", "§a▶ Clic para comprar estación")));
 
         // Slot 31: Recaudar Ganancias
         inv.setItem(31, createBtn(Material.GOLD_BLOCK, "§e💰 Recaudar Beneficios Acumulados",
@@ -102,7 +102,7 @@ public class CasinoTycoonManager implements Listener {
 
             if (slot == 11) { // Buy BJ table
                 if (plugin.getEconomyManager().getBalance(player) < 25000) {
-                    player.sendMessage(ChatColor.RED + "Saldo insuficiente ($25,000 requeridos).");
+                    player.sendMessage(ChatColor.RED + "Saldo insuficiente (25,000 monedas requeridas).");
                     player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 0.8f, 1f);
                     return;
                 }
@@ -113,7 +113,7 @@ public class CasinoTycoonManager implements Listener {
                 openTycoonGUI(player);
             } else if (slot == 13) { // Buy Roulette
                 if (plugin.getEconomyManager().getBalance(player) < 40000) {
-                    player.sendMessage(ChatColor.RED + "Saldo insuficiente ($40,000 requeridos).");
+                    player.sendMessage(ChatColor.RED + "Saldo insuficiente (40,000 monedas requeridas).");
                     player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 0.8f, 1f);
                     return;
                 }
@@ -124,7 +124,7 @@ public class CasinoTycoonManager implements Listener {
                 openTycoonGUI(player);
             } else if (slot == 15) { // Buy Crash Station
                 if (plugin.getEconomyManager().getBalance(player) < 75000) {
-                    player.sendMessage(ChatColor.RED + "Saldo insuficiente ($75,000 requeridos).");
+                    player.sendMessage(ChatColor.RED + "Saldo insuficiente (75,000 monedas requeridas).");
                     player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 0.8f, 1f);
                     return;
                 }

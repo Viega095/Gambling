@@ -53,7 +53,7 @@ public class CasinoVIPLounge implements Listener {
                     "§a✦ Otorga: §fVelocidad II (10 min)",
                     "§a✦ Bono: §e+15% Ganancias en apuestas",
                     "",
-                    "§6Precio: §a$250",
+                    "§6Precio: §a250 monedas",
                     "§e▶ Haz clic para ordenar"
             ));
             p1.setColor(Color.fromRGB(135, 206, 250));
@@ -71,7 +71,7 @@ public class CasinoVIPLounge implements Listener {
                     "§a✦ Otorga: §fSuerte II + Resplandor (15 min)",
                     "§a✦ Bono: §65% Cashback en pérdidas de casino",
                     "",
-                    "§6Precio: §a$1,000",
+                    "§6Precio: §a1,000 monedas",
                     "§e▶ Haz clic para ordenar"
             ));
             p2.setColor(Color.fromRGB(255, 215, 0));
@@ -89,7 +89,7 @@ public class CasinoVIPLounge implements Listener {
                     "§a✦ Otorga: §fPrisa Minera II (10 min)",
                     "§a✦ Bono: §a+10% Probabilidad en Plinko y Minas",
                     "",
-                    "§6Precio: §a$500",
+                    "§6Precio: §a500 monedas",
                     "§e▶ Haz clic para ordenar"
             ));
             p3.setColor(Color.fromRGB(50, 205, 50));
@@ -107,7 +107,7 @@ public class CasinoVIPLounge implements Listener {
                     "§a✦ Otorga: §fFuerza II + Resistencia al Fuego (10 min)",
                     "§a✦ Bono: §cPartículas ígneas al ganar apuestas",
                     "",
-                    "§6Precio: §a$750",
+                    "§6Precio: §a750 monedas",
                     "§e▶ Haz clic para ordenar"
             ));
             p4.setColor(Color.fromRGB(220, 20, 60));

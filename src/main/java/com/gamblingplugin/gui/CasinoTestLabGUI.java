@@ -54,14 +54,14 @@ public class CasinoTestLabGUI implements Listener {
         inv.setItem(4, createBtn(Material.ORANGE_GLAZED_TERRACOTTA, "§6§l[ÍTEM] Mega Rueda de la Fortuna",
                 Arrays.asList("§7Obtén el ítem crafteable con PDC.", "§7Colócalo en el mundo para desplegarla.", "", "§e▶ Haz clic para recibir")));
 
-        inv.setItem(5, createBtn(Material.CHEST, "§d§l[PACK] Kit Completo 5 Multiblocks",
-                Arrays.asList("§7Recibe 1 unidad de cada una de las", "§75 estructuras de casino con PDC.", "", "§d▶ Haz clic para recibir todo")));
+        inv.setItem(5, createBtn(Material.CHEST, "§d§l[PACK] Kit Completo Multiblocks 3D",
+                Arrays.asList("§7Recibe 1 unidad de cada una de las", "§7estructuras de casino con PDC.", "", "§d▶ Haz clic para recibir todo")));
 
-        inv.setItem(6, createBtn(Material.GOLD_INGOT, "§a§l+$10,000 Balance de Prueba",
-                Arrays.asList("§7Deposita $10,000 en tu cuenta Vault", "§7para realizar apuestas y pruebas.", "", "§a▶ Haz clic para recargar")));
+        inv.setItem(6, createBtn(Material.GOLD_INGOT, "§a§l+10,000 Monedas de Prueba",
+                Arrays.asList("§7Deposita 10,000 monedas en tu cuenta Vault", "§7para realizar apuestas y pruebas.", "", "§a▶ Haz clic para recargar")));
 
-        inv.setItem(7, createBtn(Material.GOLD_BLOCK, "§a§l+$100,000 Balance de Prueba",
-                Arrays.asList("§7Deposita $100,000 en tu cuenta Vault", "§7para apuestas de alto límite.", "", "§a▶ Haz clic para recargar")));
+        inv.setItem(7, createBtn(Material.GOLD_BLOCK, "§a§l+100,000 Monedas de Prueba",
+                Arrays.asList("§7Deposita 100,000 monedas en tu cuenta Vault", "§7para apuestas de alto límite.", "", "§a▶ Haz clic para recargar")));
 
         inv.setItem(8, createBtn(Material.BARRIER, "§c§lDesmontar Estructuras Cercanas",
                 Arrays.asList("§7Desmonta limpiamente todas las mesas", "§7en un radio de 15 bloques (0 dupes).", "", "§c▶ Haz clic para limpiar")));
@@ -147,8 +147,8 @@ public class CasinoTestLabGUI implements Listener {
         inv.setItem(34, createBtn(Material.GOLDEN_CARROT, "§e🎟️ Pase de Temporada del Casino",
                 Arrays.asList("§7Consulta tu nivel de pase y reclama", "§7recompensas exclusivas de nivel.", "", "§e▶ Haz clic para abrir")));
 
-        inv.setItem(35, createBtn(Material.EXPERIENCE_BOTTLE, "§6💱 Exchange de Fichas $CHIPS",
-                Arrays.asList("§7Intercambia dinero líquido por fichas", "§7de casino $CHIPS y viceversa.", "", "§6▶ Haz clic para ver")));
+        inv.setItem(35, createBtn(Material.EXPERIENCE_BOTTLE, "§6💱 Casa de Cambio de Fichas VIP",
+                Arrays.asList("§7Intercambia dinero líquido por fichas", "§7de casino VIP y viceversa.", "", "§6▶ Haz clic para ver")));
 
         // Fila 4 (36-44): Sistemas de Utilidad, VIP y Mantenimiento
         inv.setItem(36, createBtn(Material.CRYING_OBSIDIAN, "§5💳 Bóveda Segura & Tarjeta VIP",
@@ -185,8 +185,10 @@ public class CasinoTestLabGUI implements Listener {
                 Arrays.asList("§7Construye la mesa de Keno 3D física", "§7directamente en tus coordenadas.", "", "§b▶ Haz clic para spawnear")));
         inv.setItem(47, createBtn(Material.LIME_DYE, "§a🎱 Probar Keno de la Fortuna (GUI)",
                 Arrays.asList("§7Abre el tablero de 40 números de Keno", "§7con sorteos y multiplicadores de hasta 50x.", "", "§a▶ Haz clic para jugar")));
-        inv.setItem(48, createBtn(Material.NETHER_WART, "§c🔥 Probar Raspes del Nether & Olimpo",
-                Arrays.asList("§7Abre la tienda de tarjetas rascables con", "§7las nuevas variantes de alto premio.", "", "§c▶ Haz clic para abrir")));
+        inv.setItem(48, createBtn(Material.LIME_TERRACOTTA, "§a§l[ÍTEM] Mesa de Craps Real 3D (PDC)",
+                Arrays.asList("§7Obtén el ítem crafteable con PDC.", "§7Colócalo en el mundo para desplegarla.", "", "§e▶ Haz clic para recibir")));
+        inv.setItem(49, createBtn(Material.LIME_WOOL, "§a🎲 Spawnear Mesa de Craps 3D",
+                Arrays.asList("§7Construye la mesa de Craps 3D física", "§7con paño reglamentario en tus coordenadas.", "", "§b▶ Haz clic para spawnear")));
 
         inv.setItem(50, createBtn(Material.GREEN_TERRACOTTA, "§2§l[ÍTEM] Mesa de Blackjack 3D (PDC)",
                 Arrays.asList("§7Obtén el ítem crafteable con PDC.", "§7Colócalo en el mundo para desplegarla.", "", "§e▶ Haz clic para recibir")));
@@ -196,8 +198,6 @@ public class CasinoTestLabGUI implements Listener {
                 Arrays.asList("§7Abre la enciclopedia completa de VieGambling", "§7con reglas, comandos, mesas y economía.", "", "§a▶ Haz clic para consultar la guía")));
         inv.setItem(53, createBtn(Material.PLAYER_HEAD, "§e🂡 Probar Blackjack 21 Directo",
                 Arrays.asList("§7Abre el lobby de Blackjack multijugador", "§7para jugar una partida contra el crupier.", "", "§e▶ Haz clic para jugar")));
-        inv.setItem(49, createBtn(Material.NETHER_STAR, "§6§l✦ PANEL MAESTRO DE PRUEBAS: VIEGAMBLING ✦",
-                Arrays.asList("§7Panel interactivo integral para probar", "§7todo el contenido del casino en 1 clic.")));
 
         player.openInventory(inv);
         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1f, 1.2f);
@@ -253,16 +253,16 @@ public class CasinoTestLabGUI implements Listener {
                 for (CasinoMultiblockType type : CasinoMultiblockType.values()) {
                     giveItem(player, type);
                 }
-                player.sendMessage("§a[TestLab] ✔ Has recibido el kit completo de los 5 multiblocks desplegables con PDC.");
+                player.sendMessage("§a[TestLab] ✔ Has recibido el kit completo de todos los multiblocks desplegables con PDC.");
                 break;
             case 6:
                 plugin.getEconomyManager().deposit(player, 10000.0);
-                player.sendMessage("§a[TestLab] ✔ Se han depositado §e+$10,000 §aen tu cuenta.");
+                player.sendMessage("§a[TestLab] ✔ Se han depositado §e+10,000 monedas §aen tu cuenta.");
                 player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1.5f);
                 break;
             case 7:
                 plugin.getEconomyManager().deposit(player, 100000.0);
-                player.sendMessage("§a[TestLab] ✔ Se han depositado §e+$100,000 §aen tu cuenta.");
+                player.sendMessage("§a[TestLab] ✔ Se han depositado §e+100,000 monedas §aen tu cuenta.");
                 player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1.8f);
                 break;
             case 8:
@@ -449,8 +449,13 @@ public class CasinoTestLabGUI implements Listener {
                 new com.gamblingplugin.gui.KenoGUI(plugin).open(player);
                 break;
             case 48:
+                giveItem(player, CasinoMultiblockType.CRAPS_TABLE_3D);
+                break;
+            case 49:
                 player.closeInventory();
-                new com.gamblingplugin.gui.ScratchCardGUI(plugin).openNewCard(player, 2500.0);
+                Location crapsLoc = player.getLocation().getBlock().getLocation();
+                plugin.getCasinoMultiblockManager().placeMultiblock(player, crapsLoc, CasinoMultiblockType.CRAPS_TABLE_3D);
+                player.sendMessage("§a[TestLab] ✔ Mesa de Craps Real 3D construida en tu ubicación.");
                 break;
             case 50:
                 giveItem(player, CasinoMultiblockType.BLACKJACK_3D);

@@ -123,6 +123,13 @@ public class ActiveCasinoMultiblock {
                 structureReference = blackjack;
                 plugin.getStructureManager().getAllBlackjack().put(entityCenter, blackjack);
                 break;
+
+            case CRAPS_TABLE_3D:
+                DiceStructure crapsDice = new DiceStructure(plugin, entityCenter);
+                crapsDice.spawn();
+                structureReference = crapsDice;
+                plugin.getStructureManager().getAllDice().put(entityCenter, crapsDice);
+                break;
         }
 
         // Identify and store spawned entity UUIDs

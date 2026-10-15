@@ -118,6 +118,21 @@ public enum CasinoMultiblockType {
                     "§8▪ §eRomper cualquier bloque la desmonta.",
                     "§8▪ §eDevuelve el ítem original sin pérdidas."
             )
+    ),
+
+    CRAPS_TABLE_3D(
+            "CRAPS_TABLE_3D",
+            "§a§lMesa de Craps Real 3D",
+            Material.LIME_TERRACOTTA,
+            Arrays.asList(
+                    "§7Estructura de casino desplegable.",
+                    "§7Colócala en el suelo para erigir una",
+                    "§7auténtica mesa reglamentaria de dados Craps.",
+                    "",
+                    "§8▪ §aPaño verde esmeralda con área de tiro.",
+                    "§8▪ §eRomper cualquier bloque la desmonta.",
+                    "§8▪ §eDevuelve el ítem original sin pérdidas."
+            )
     );
 
     private final String id;
@@ -255,6 +270,16 @@ public enum CasinoMultiblockType {
                 recipe.setIngredient('P', Material.PAPER);
                 recipe.setIngredient('E', Material.EMERALD);
                 recipe.setIngredient('C', Material.LEATHER_CHESTPLATE);
+                break;
+
+            case CRAPS_TABLE_3D:
+                // L: LIME_WOOL, B: BONE_BLOCK, D: DARK_OAK_PLANKS, G: GOLD_INGOT, R: REDSTONE
+                recipe.shape("LBL", "DGD", "RDR");
+                recipe.setIngredient('L', Material.LIME_WOOL);
+                recipe.setIngredient('B', Material.BONE_BLOCK);
+                recipe.setIngredient('D', Material.DARK_OAK_PLANKS);
+                recipe.setIngredient('G', Material.GOLD_INGOT);
+                recipe.setIngredient('R', Material.REDSTONE);
                 break;
         }
 

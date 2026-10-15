@@ -30,6 +30,16 @@ public class CasinoHeistEvent {
             return false;
         }
 
+        if (GlobalEventLock.isEventActive()) {
+            leader.sendMessage(ChatColor.RED + "✖ No puedes iniciar el Golpe al Casino ahora: otro evento global (" + GlobalEventLock.getActiveEventTitle() + ") está activo.");
+            return false;
+        }
+
+        if (!GlobalEventLock.acquireLock(plugin, "Golpe a la Bóveda del Casino", 90)) {
+            leader.sendMessage(ChatColor.RED + "✖ No se pudo bloquear el evento global.");
+            return false;
+        }
+
         heistActive = true;
         activeHeisters.add(leader.getUniqueId());
 
@@ -82,6 +92,7 @@ public class CasinoHeistEvent {
     private void endHeist(boolean success, Player leader) {
         heistActive = false;
         activeHeisters.clear();
+        GlobalEventLock.releaseLock(plugin);
 
         if (success) {
             double loot = 250000.0;
@@ -90,6 +101,26 @@ public class CasinoHeistEvent {
                     ChatColor.GOLD + " ha asaltado la Bóveda del Casino y escapó con " +
                     plugin.getEconomyManager().format(loot) + "!");
             leader.playSound(leader.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f);
+
+            // Cross-Plugin Synergy Reward: Moneda de la Fortuna del Casino
+            ItemStack fortuneCoin = new ItemStack(Material.SUNFLOWER);
+            org.bukkit.inventory.meta.ItemMeta meta = fortuneCoin.getItemMeta();
+            if (meta != null) {
+                meta.setDisplayName("§6§l✦ Moneda de la Fortuna Suprema ✦");
+                meta.setLore(java.util.Arrays.asList(
+                        "§7Acuñada en los sótanos clandestinos del Casino.",
+                        "§e[Reliquia Multi-Plugin]",
+                        "§aHaz clic derecho para canjear un Cofre del Destino",
+                        "§7con botines raros de Pesca, Magia y RPG."
+                ));
+                meta.getPersistentDataContainer().set(
+                        new NamespacedKey(plugin, "destiny_token"),
+                        org.bukkit.persistence.PersistentDataType.BYTE,
+                        (byte) 1
+                );
+                fortuneCoin.setItemMeta(meta);
+            }
+            leader.getInventory().addItem(fortuneCoin);
         }
     }
 }

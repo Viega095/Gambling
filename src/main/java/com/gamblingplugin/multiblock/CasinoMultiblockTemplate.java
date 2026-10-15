@@ -69,6 +69,7 @@ public class CasinoMultiblockTemplate {
             case WHEEL_OF_FORTUNE -> 3.0;
             case KENO_3D -> 1.0;
             case BLACKJACK_3D -> 0.8;
+            case CRAPS_TABLE_3D -> 0.8;
         };
     }
 
@@ -224,6 +225,28 @@ public class CasinoMultiblockTemplate {
                 relativeBlocks.put(new BlockOffset(0, 0, -1), Material.POLISHED_BLACKSTONE);
                 relativeBlocks.put(new BlockOffset(1, 0, -1), Material.DARK_OAK_PLANKS);
                 relativeBlocks.put(new BlockOffset(-1, 0, -1), Material.DARK_OAK_PLANKS);
+                break;
+
+            case CRAPS_TABLE_3D:
+                // Base at 0,0,0
+                relativeBlocks.put(new BlockOffset(0, 0, 0), Material.LIME_TERRACOTTA);
+
+                // Long rectangular craps table (3 wide x 5 long)
+                for (int x = -1; x <= 1; x++) {
+                    for (int z = -2; z <= 2; z++) {
+                        if (x == 0 && z == 0) continue;
+                        if (x == -1 || x == 1 || z == -2 || z == 2) {
+                            relativeBlocks.put(new BlockOffset(x, 0, z), Material.DARK_OAK_PLANKS);
+                        } else {
+                            relativeBlocks.put(new BlockOffset(x, 0, z), Material.LIME_CONCRETE);
+                        }
+                    }
+                }
+                // Corners gold accent
+                relativeBlocks.put(new BlockOffset(-1, 0, -2), Material.GOLD_BLOCK);
+                relativeBlocks.put(new BlockOffset(1, 0, -2), Material.GOLD_BLOCK);
+                relativeBlocks.put(new BlockOffset(-1, 0, 2), Material.GOLD_BLOCK);
+                relativeBlocks.put(new BlockOffset(1, 0, 2), Material.GOLD_BLOCK);
                 break;
         }
     }

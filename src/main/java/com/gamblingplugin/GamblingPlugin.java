@@ -150,6 +150,7 @@ public class GamblingPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new com.gamblingplugin.gui.KenoGUI(this), this);
         getServer().getPluginManager().registerEvents(new com.gamblingplugin.gui.CasinoContentGuideGUI(this), this);
         getServer().getPluginManager().registerEvents(new com.gamblingplugin.multiblock.CasinoMultiblockListener(this, this.casinoMultiblockManager), this);
+        getServer().getPluginManager().registerEvents(new com.gamblingplugin.listeners.DestinyTokenListener(this), this);
 
         getLogger().info("GamblingPlugin has been enabled!");
     }

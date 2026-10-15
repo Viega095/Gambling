@@ -93,10 +93,10 @@ public class MultiplayerPokerEngine implements Listener {
 
         // Action Buttons: Check/Call (Slot 47), Raise (Slot 49), Fold (Slot 51)
         inv.setItem(47, createBtn(Material.LIME_DYE, "§a✔ IGUALAR / CHECK",
-                Arrays.asList("§7Iguala la apuesta actual de §6$" + (int) currentHighestBet, "", "§a▶ Clic para igualar")));
+                Arrays.asList("§7Iguala la apuesta actual de §6" + (int) currentHighestBet + " monedas", "", "§a▶ Clic para igualar")));
 
-        inv.setItem(49, createBtn(Material.GOLD_INGOT, "§e⚡ SUBIR APUESTA (+$100)",
-                Arrays.asList("§7Aumenta la apuesta a §6$" + (int) (currentHighestBet + 100), "", "§e▶ Clic para subir")));
+        inv.setItem(49, createBtn(Material.GOLD_INGOT, "§e⚡ SUBIR APUESTA (+100 monedas)",
+                Arrays.asList("§7Aumenta la apuesta a §6" + (int) (currentHighestBet + 100) + " monedas", "", "§e▶ Clic para subir")));
 
         inv.setItem(51, createBtn(Material.RED_DYE, "§c✖ RETIRARSE (FOLD)",
                 Arrays.asList("§7Abandona esta mano sin apostar más.", "", "§c▶ Clic para retirarte")));

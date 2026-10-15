@@ -2,7 +2,7 @@ name: VieGambling
 version: '${project.version}'
 main: com.gamblingplugin.GamblingPlugin
 api-version: 1.20
-depend: [Vault]
+softdepend: [Vault]
 authors: [Viega095]
 description: A complete gambling plugin with multiple games and customizable structures.
 

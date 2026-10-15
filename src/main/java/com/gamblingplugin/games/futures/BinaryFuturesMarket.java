@@ -46,16 +46,16 @@ public class BinaryFuturesMarket implements Listener {
         }
 
         // Info Asset (Slot 13)
-        inv.setItem(13, createBtn(Material.NETHERITE_INGOT, "§6🪙 Índice: Netherite Futures ($" + String.format("%.2f", currentPrice) + ")",
-                Arrays.asList("§7Predice la dirección del precio", "§7en los próximos 15 segundos.", "§aRetorno: x1.85 Tu Apuesta ($250)", "")));
+        inv.setItem(13, createBtn(Material.NETHERITE_INGOT, "§6🪙 Índice: Futuros de Netherite (" + String.format("%.2f", currentPrice) + " monedas)",
+                Arrays.asList("§7Predice la dirección del precio", "§7en los próximos 15 segundos.", "§aRetorno: x1.85 Tu Apuesta (250 monedas)", "")));
 
         // UP / CALL (Slot 11)
         inv.setItem(11, createBtn(Material.LIME_CONCRETE, "§a📈 SUBE (CALL / AL ALZA)",
-                Arrays.asList("§7Apuesta a que el precio terminará", "§7por encima del precio actual.", "", "§a▶ Clic para apostar $250 AL ALZA")));
+                Arrays.asList("§7Apuesta a que el precio terminará", "§7por encima del precio actual.", "", "§a▶ Clic para apostar 250 monedas AL ALZA")));
 
         // DOWN / PUT (Slot 15)
         inv.setItem(15, createBtn(Material.RED_CONCRETE, "§c📉 BAJA (PUT / A LA BAJA)",
-                Arrays.asList("§7Apuesta a que el precio terminará", "§7por debajo del precio actual.", "", "§c▶ Clic para apostar $250 A LA BAJA")));
+                Arrays.asList("§7Apuesta a que el precio terminará", "§7por debajo del precio actual.", "", "§c▶ Clic para apostar 250 monedas A LA BAJA")));
 
         player.openInventory(inv);
         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 0.8f, 1.2f);
@@ -63,7 +63,7 @@ public class BinaryFuturesMarket implements Listener {
 
     public void startBinaryTrade(Player player, boolean isCall) {
         if (plugin.getEconomyManager().getBalance(player) < 250) {
-            player.sendMessage(ChatColor.RED + "Saldo insuficiente para operar ($250).");
+            player.sendMessage(ChatColor.RED + "Saldo insuficiente para operar (250 monedas).");
             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 0.8f, 1f);
             return;
         }

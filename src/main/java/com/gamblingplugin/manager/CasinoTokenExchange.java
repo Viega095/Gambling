@@ -41,7 +41,7 @@ public class CasinoTokenExchange {
     public boolean buyTokens(Player player, double chipsAmount) {
         double cost = chipsAmount * tokenPrice;
         if (!plugin.getEconomyManager().has(player, cost)) {
-            player.sendMessage(ChatColor.RED + "✖ Fondos insuficientes para comprar " + chipsAmount + " $CHIPS (" +
+            player.sendMessage(ChatColor.RED + "✖ Fondos insuficientes para comprar " + chipsAmount + " Fichas VIP (" +
                     plugin.getEconomyManager().format(cost) + ")");
             return false;
         }
@@ -49,7 +49,7 @@ public class CasinoTokenExchange {
         plugin.getEconomyManager().withdraw(player, cost);
         playerTokens.put(player.getUniqueId(), getTokens(player.getUniqueId()) + chipsAmount);
 
-        player.sendMessage(ChatColor.GOLD + "🪙 [Exchange] ¡Has comprado " + ChatColor.YELLOW + chipsAmount + " $CHIPS " +
+        player.sendMessage(ChatColor.GOLD + "🪙 [Casa de Cambio] ¡Has comprado " + ChatColor.YELLOW + chipsAmount + " Fichas VIP " +
                 ChatColor.GOLD + "por " + plugin.getEconomyManager().format(cost) + "!");
         player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1.2f);
         return true;
@@ -58,7 +58,7 @@ public class CasinoTokenExchange {
     public boolean sellTokens(Player player, double chipsAmount) {
         double current = getTokens(player.getUniqueId());
         if (current < chipsAmount) {
-            player.sendMessage(ChatColor.RED + "✖ No posees suficientes $CHIPS (Tienes: " + current + ")");
+            player.sendMessage(ChatColor.RED + "✖ No posees suficientes Fichas VIP (Tienes: " + current + ")");
             return false;
         }
 
@@ -66,7 +66,7 @@ public class CasinoTokenExchange {
         playerTokens.put(player.getUniqueId(), current - chipsAmount);
         plugin.getEconomyManager().deposit(player, revenue);
 
-        player.sendMessage(ChatColor.GREEN + "💰 [Exchange] ¡Has vendido " + ChatColor.YELLOW + chipsAmount + " $CHIPS " +
+        player.sendMessage(ChatColor.GREEN + "💰 [Casa de Cambio] ¡Has vendido " + ChatColor.YELLOW + chipsAmount + " Fichas VIP " +
                 ChatColor.GREEN + "por " + plugin.getEconomyManager().format(revenue) + "!");
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1.4f);
         return true;

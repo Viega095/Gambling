@@ -180,11 +180,11 @@ public class CasinoVaultAndLoyalty implements Listener {
         if (vMeta != null) {
             vMeta.setDisplayName("§e🏦 §lCaja Fuerte de Depósito");
             vMeta.setLore(Arrays.asList(
-                    "§7Saldo en Bóveda: §a$" + String.format("%,.2f", vBalance),
+                    "§7Saldo en Bóveda: §a" + String.format("%,.2f", vBalance) + " monedas",
                     "",
-                    "§e[Clic Izquierdo] §7Depositar $1,000",
+                    "§e[Clic Izquierdo] §7Depositar 1,000 monedas",
                     "§e[Clic Derecho] §7Retirar TODO a tu bolsillo",
-                    "§6[Shift + Clic] §7Depositar $10,000"
+                    "§6[Shift + Clic] §7Depositar 10,000 monedas"
             ));
             vault.setItemMeta(vMeta);
         }

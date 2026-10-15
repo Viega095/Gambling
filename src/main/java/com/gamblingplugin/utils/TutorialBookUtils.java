@@ -37,7 +37,7 @@ public class TutorialBookUtils {
                 "§7• El cohete despega y su multiplicador sube.",
                 "§7• Puedes retirar en cualquier momento con el botón verde.",
                 "§7• ¡Si el cohete explota antes de retirar, pierdes la apuesta!",
-                "§7• Ejemplo: Retirar a 2.05x con $100 da $205 de ganancia.",
+                "§7• Ejemplo: Retirar a 2.05x con 100 monedas da 205 de ganancia.",
                 "§e⚡ Usa el botón de Cashout rápido durante el vuelo."
         ));
     }
@@ -79,7 +79,7 @@ public class TutorialBookUtils {
 
     public static ItemStack getLotteryGuide() {
         return createTutorialBook("Lotería Progresiva", Arrays.asList(
-                "§7• Compra todos los boletos que desees por $50 c/u.",
+                "§7• Compra todos los boletos que desees por 50 monedas c/u.",
                 "§7• El 90% del dinero entra al pozo acumulado.",
                 "§7• El sorteo se ejecuta automáticamente cada 30 min.",
                 "§a✔ ¡El ganador se lleva todo el pozo acumulado!"

@@ -134,9 +134,9 @@ public class GambleCommand implements CommandExecutor {
             if (args[0].equalsIgnoreCase("token") || args[0].equalsIgnoreCase("chips")) {
                 double price = plugin.getCasinoTokenExchange().getTokenPrice();
                 double myTokens = plugin.getCasinoTokenExchange().getTokens(player.getUniqueId());
-                player.sendMessage("§6=== 🪙 §eEXCHANGE DE FICHAS $CHIPS §6===");
-                player.sendMessage("§7Precio actual: §a" + plugin.getEconomyManager().format(price) + " §7por cada $CHIP");
-                player.sendMessage("§7Tus $CHIPS: §e" + myTokens + " $CHIPS");
+                player.sendMessage("§6=== 🪙 §eCASA DE CAMBIO DE FICHAS VIP §6===");
+                player.sendMessage("§7Precio actual: §a" + plugin.getEconomyManager().format(price) + " §7por cada ficha");
+                player.sendMessage("§7Tus Fichas VIP: §e" + myTokens + " §7fichas");
                 player.sendMessage("§7Comprar: §e/gamble token buy <cantidad>");
                 player.sendMessage("§7Vender: §e/gamble token sell <cantidad>");
                 return true;
@@ -314,12 +314,12 @@ public class GambleCommand implements CommandExecutor {
                 java.util.List<String> recentWinners = plugin.getJackpotManager().getRecentWinners();
 
                 player.sendMessage("");
-                player.sendMessage("§6§l[VieGambling] JACKPOT:");
+                player.sendMessage("§6§l[VieGambling] POZO JACKPOT:");
                 player.sendMessage("");
-                player.sendMessage("§e  Pozo actual: §a§l$" + String.format("%.2f", jackpotAmount));
+                player.sendMessage("§e  Pozo actual: §a§l" + String.format("%.2f", jackpotAmount) + " monedas");
                 player.sendMessage("");
                 player.sendMessage("§7  §oRequisitos:");
-                player.sendMessage("§7  - Apostar al menos §e$100");
+                player.sendMessage("§7  - Apostar al menos §e100 monedas");
                 player.sendMessage("§7  - Probabilidad: §e0.1%§7 por apuesta");
                 player.sendMessage("§7  - Se puede ganar en cualquier juego");
                 player.sendMessage("");
@@ -964,7 +964,7 @@ public class GambleCommand implements CommandExecutor {
         sendClickable(player, "§6▶ §eMáquina Plinko Física §7(/gamble plinko3d)", "/gamble plinko3d", "§aSoltar bola física de Plinko");
         sendClickable(player, "§6▶ §eRuleta de la Suerte Diaria §7(/gamble daily)", "/gamble daily", "§aGirar gratis cada 24 horas");
         sendClickable(player, "§6▶ §ePase de Temporada VIP §7(/gamble pass)", "/gamble pass", "§aVer tu progreso y recompensas del pase");
-        sendClickable(player, "§6▶ §eExchange de Fichas $CHIPS §7(/gamble token)", "/gamble token", "§aComprar y vender fichas del casino");
+        sendClickable(player, "§6▶ §eCasa de Cambio de Fichas VIP §7(/gamble token)", "/gamble token", "§aComprar y vender fichas del casino");
         sendClickable(player, "§6▶ §eLobby de Blackjack §7(/gamble blackjack)", "/gamble blackjack", "§aAbrir menú de mesas de Blackjack");
         sendClickable(player, "§6▶ §eMesa de Baccarat Punto Banco §7(/gamble baccarat)", "/gamble baccarat", "§aJugar Baccarat interactivo Jugador vs Banca");
         sendClickable(player, "§6▶ §eLotería Progresiva del Servidor §7(/gamble lottery)", "/gamble lottery", "§aComprar boletos para el gran sorteo global");

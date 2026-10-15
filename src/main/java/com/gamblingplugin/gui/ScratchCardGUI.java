@@ -131,11 +131,11 @@ public class ScratchCardGUI implements Listener {
         }
 
         // Buy new cards shortcuts
-        inv.setItem(45, createBtn(Material.NETHER_WART, "§c🔥 Tesoros del Nether ($2,500)", Arrays.asList("§7Premio máx: $250,000", "§e▶ Clic para comprar")));
-        inv.setItem(46, createBtn(Material.IRON_NUGGET, "§f🎟️ Raspe Plata ($100)", Arrays.asList("§7Premio máx: $10,000", "§e▶ Clic para comprar")));
-        inv.setItem(48, createBtn(Material.GOLD_NUGGET, "§e🎟️ Raspe Oro ($500)", Arrays.asList("§7Premio máx: $50,000", "§e▶ Clic para comprar")));
-        inv.setItem(50, createBtn(Material.DIAMOND, "§b🎟️ Raspe Diamante ($1,000)", Arrays.asList("§7Premio máx: $100,000", "§e▶ Clic para comprar")));
-        inv.setItem(51, createBtn(Material.NETHER_STAR, "§6⚡ Olimpo Dorado ($5,000)", Arrays.asList("§7Premio máx: $500,000", "§e▶ Clic para comprar")));
+        inv.setItem(45, createBtn(Material.NETHER_WART, "§c🔥 Tesoros del Nether (2,500 monedas)", Arrays.asList("§7Premio máx: §a250,000 monedas", "§e▶ Clic para comprar")));
+        inv.setItem(46, createBtn(Material.IRON_NUGGET, "§f🎟️ Raspe Plata (100 monedas)", Arrays.asList("§7Premio máx: §a10,000 monedas", "§e▶ Clic para comprar")));
+        inv.setItem(48, createBtn(Material.GOLD_NUGGET, "§e🎟️ Raspe Oro (500 monedas)", Arrays.asList("§7Premio máx: §a50,000 monedas", "§e▶ Clic para comprar")));
+        inv.setItem(50, createBtn(Material.DIAMOND, "§b🎟️ Raspe Diamante (1,000 monedas)", Arrays.asList("§7Premio máx: §a100,000 monedas", "§e▶ Clic para comprar")));
+        inv.setItem(51, createBtn(Material.NETHER_STAR, "§6⚡ Olimpo Dorado (5,000 monedas)", Arrays.asList("§7Premio máx: §a500,000 monedas", "§e▶ Clic para comprar")));
 
         player.openInventory(inv);
     }

@@ -63,6 +63,7 @@ public class CasinoContentGuideGUI implements Listener {
                         "§8▪ §6Mega Rueda de la Fortuna §7- Rueda monumental de 16 sectores.",
                         "§8▪ §bMesa de Keno 3D §7- Bombo extractor con 40 números.",
                         "§8▪ §2Mesa de Blackjack 3D §7- Semicírculo con crupier elegante.",
+                        "§8▪ §aMesa de Craps Real 3D §6[NUEVO] §7- Paño verde y dados parabólicos.",
                         "",
                         "§d✦ Desmontaje Inteligente: §7Romper cualquier bloque",
                         "§7desmonta la estructura al 100% y devuelve el ítem."
@@ -110,8 +111,8 @@ public class CasinoContentGuideGUI implements Listener {
                         "§8▪ §6Carrera de Caballos: §7Apuestas en vivo a 4 jinetes."
                 )));
 
-        // Slot 28: Fichas $CHIPS & Economía Segura
-        inv.setItem(28, createItem(Material.GOLD_INGOT, "§e💱 Fichas $CHIPS & Economía",
+        // Slot 28: Fichas VIP & Economía Segura
+        inv.setItem(28, createItem(Material.GOLD_INGOT, "§e💱 Fichas de Juego & Economía",
                 Arrays.asList(
                         "§7Integración económica con Vault:",
                         "§8▪ §fConversión 1:1 o tasa configurable.",
@@ -140,7 +141,7 @@ public class CasinoContentGuideGUI implements Listener {
                         "§8▪ §e/gamble §7o §e/casino §7- Abre el menú general.",
                         "§8▪ §e/gamble guia §7o §e/gamble contenido §7- Abre esta guía.",
                         "§8▪ §e/gamble test §7- Laboratorio de pruebas completas.",
-                        "§8▪ §e/gamble fichas §7- Gestión de fichas $CHIPS.",
+                        "§8▪ §e/gamble fichas §7- Gestión de fichas del casino.",
                         "§8▪ §e/gamble stats §7- Historial de apuestas personal.",
                         "§8▪ §e/gamble vip §7- Panel de recompensas VIP."
                 )));
